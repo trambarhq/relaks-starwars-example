@@ -17,6 +17,11 @@ class Application extends Component {
         };
     }
 
+    /**
+     * Render the application
+     *
+     * @return {VNode}
+     */
     render() {
         return (
             <div>
@@ -26,6 +31,11 @@ class Application extends Component {
         );
     }
 
+    /**
+     * Render the user interface
+     *
+     * @return {VNode|null}
+     */
     renderUserInterface() {
         let { swapi, person } = this.state;
         if (!swapi) {
@@ -40,6 +50,11 @@ class Application extends Component {
         }
     }
 
+    /**
+     * Render non-visual components
+     *
+     * @return {VNode}
+     */
     renderConfiguration() {
         let props = { onChange: this.handleDataSourceChange };
         return (
@@ -49,14 +64,29 @@ class Application extends Component {
         );
     }
 
+    /**
+     * Called when user selects a person
+     *
+     * @param  {Event} evt
+     */
     handlePersonSelect = (evt) => {
         this.setState({ person: evt.person });
     }
 
+    /**
+     * Called when user clicks "Return to list" link
+     *
+     * @param  {Event} evt
+     */
     handlePersonUnselect = (evt) => {
         this.setState({ person: null });
     }
 
+    /**
+     * Called when the data source changes
+     *
+     * @param  {Object} evt
+     */
     handleDataSourceChange = (evt) => {
         this.setState({ swapi: new SWAPI(evt.target) });
     }

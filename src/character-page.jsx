@@ -4,9 +4,16 @@ import { AsyncComponent } from 'prelaks';
 /** @jsx h */
 
 class CharacterPage extends AsyncComponent {
+    /**
+     * Retrieve remote data and render the synchronize half of this component
+     *
+     * @param  {Meanwhile}  meanwhile
+     *
+     * @return {VNode}
+     */
     async renderAsync(meanwhile) {
         let { swapi, person } = this.props;
-        var props = {
+        let props = {
             homeworld: null,
             films: null,
             species: null,
@@ -32,6 +39,11 @@ class CharacterPage extends AsyncComponent {
 }
 
 class CharacterPageSync extends Component {
+    /**
+     * Render the component, making best effort using what props are given
+     *
+     * @return {VNode}
+     */
     render() {
         let { person } = this.props;
         let linkProps = {
@@ -63,36 +75,71 @@ class CharacterPageSync extends Component {
         );
     }
 
+    /**
+     * Render name of character's homeworld
+     *
+     * @return {VNode}
+     */
     renderHomeworld() {
         let { person, homeworld } = this.props;
-        var urls = person.homeworld ? [ person.homeworld ] : [];
-        var homeworlds = {};
+        let urls = person.homeworld ? [ person.homeworld ] : [];
+        let homeworlds = {};
         if (homeworld) {
             homeworlds[urls[0]] = homeworld;
         }
         return this.renderList(urls, homeworlds, 'name');
     }
 
+    /**
+     * Render list of films in which the character appears
+     *
+     * @return {VNode}
+     */
     renderFilms() {
         let { person, films } = this.props;
         return this.renderList(person.films, films, 'title');
     }
 
+    /**
+     * Render list of species to which the character belong
+     *
+     * @return {VNode}
+     */
     renderSpecies() {
         let { person, species } = this.props;
         return this.renderList(person.species, species, 'name');
     }
 
+    /**
+     * Render list of vehicles the character has driven
+     *
+     * @return {VNode}
+     */
     renderVehicles() {
         let { person, vehicles } = this.props;
         return this.renderList(person.vehicles, vehicles, 'name');
     }
 
+    /**
+     * Render list of starships the character has flown
+     *
+     * @return {VNode}
+     */
     renderStarships() {
         let { person, starships } = this.props;
         return this.renderList(person.starships, starships, 'name');
     }
 
+    /**
+     * Render a list of objects using their URLs as keys. Render "..." if an
+     * object is not yet retrieved.
+     *
+     * @param  {Array<String>} urls
+     * @param  {Object<Object>} objects
+     * @param  {String} field
+     *
+     * @return {VNode}
+     */
     renderList(urls, objects, field) {
         if (!urls || !urls.length) {
             return <ul className="empty"><li>none</li></ul>;
@@ -101,9 +148,9 @@ class CharacterPageSync extends Component {
             <ul>
             {
                 urls.map((url) => {
-                    var object = (objects) ? objects[url] : null;
+                    let object = (objects) ? objects[url] : null;
                     if (object) {
-                        var text = object[field];
+                        let text = object[field];
                         return <li>{text}</li>;
                     } else {
                         return <li><span className="pending">...</span></li>;
@@ -114,6 +161,11 @@ class CharacterPageSync extends Component {
         );
     }
 
+    /**
+     * Called when user clicks the "Return to list" link
+     *
+     * @param  {Event} evt
+     */
     handleReturnClick = (evt) => {
         if (evt.button === 0) {
             if (this.props.onReturn) {

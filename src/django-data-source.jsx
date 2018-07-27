@@ -1,30 +1,66 @@
 import { Component } from 'preact';
 
 class DjangoDataSource extends Component {
+    /**
+     * Set initial state of component
+     */
     constructor() {
         super();
         this.requests = [];
         this.state = { requests: this.requests };
     }
 
-    render(props, state) {
+    /**
+     * Render nothing
+     *
+     * @return {Null}
+     */
+    render() {
         return null;
     }
 
+    /**
+     * Trigger onChange on mount
+     *
+     * @return {[type]}
+     */
     componentDidMount() {
         this.triggerChangeEvent();
     }
 
+    /**
+     * Call the onChange handler
+     */
     triggerChangeEvent() {
         if (this.props.onChange) {
             this.props.onChange({ type: 'change', target: this });
         }
     }
 
+    /**
+     * Fetch one object at the URL.
+     *
+     * @param  {String} url
+     *
+     * @return {Promise<Object>}
+     */
     fetchOne(url) {
         return this.fetch(url);
     }
 
+    /**
+     * Fetch a list of objects at the given URL. If page is specified in
+     * options, then objects in that page are returned. Otherwise object from
+     * the all objects are returned through multiple calls. A method named
+     * more() will be attached to be array, which initially contains only
+     * objects in the first page. Calling .more() retrieves the those in the
+     * next unretrieved page.
+     *
+     * @param  {String} url
+     * @param  {Object|undefined} options
+     *
+     * @return {Promise<Array>}
+     */
     fetchList(url, options) {
         let page = (options && options.page !== undefined) ? options.page : 0;
         if (page) {
@@ -36,16 +72,16 @@ class DjangoDataSource extends Component {
         } else {
             // fetch pages on demand, concatenating them
             let props = { url, list: true };
-            var request = this.findRequest(props);
+            let request = this.findRequest(props);
             if (!request) {
                 request = this.addRequest(props)
 
                 // create fetch function
-                var nextURL = url;
-                var previousResults = [];
-                var currentPage = 1;
-                var currentPromise = null;
-                var fetchNextPage = () => {
+                let nextURL = url;
+                let previousResults = [];
+                let currentPage = 1;
+                let currentPromise = null;
+                let fetchNextPage = () => {
                     if (currentPromise) {
                         return currentPromise;
                     }
@@ -82,11 +118,21 @@ class DjangoDataSource extends Component {
         }
     }
 
+    /**
+     * Fetch multiple JSON objects. If partial is specified, then immediately
+     * resolve with cached results when there're sufficient numbers of objects.
+     * An onChange will be trigger once the full set is retrieved.
+     *
+     * @param  {Array<String>} urls
+     * @param  {Object} options
+     *
+     * @return {Promise<Object>}
+     */
     fetchMultiple(urls, options) {
         // see which ones are cached already
-        var results = {};
-        var promises = {};
-        var cached = 0;
+        let results = {};
+        let promises = {};
+        let cached = 0;
         urls.forEach((url) => {
             let request = this.findRequest({ url, list: false });
             if (request && request.result) {
@@ -98,7 +144,7 @@ class DjangoDataSource extends Component {
         });
 
         // wait for the complete set to arrive
-        var completeSetPromise;
+        let completeSetPromise;
         if (cached < urls.length) {
             completeSetPromise = new Promise((resolve, reject) => {
                 urls.forEach((url) => {
@@ -123,7 +169,7 @@ class DjangoDataSource extends Component {
 
         // see whether partial result set should be immediately returned
         let partial = (options && options.partial !== undefined) ? options.partial : false;
-        var minimum;
+        let minimum;
         if (typeof(partial) === 'number') {
             minimum = urls.length * partial;
         } else if (partial) {
@@ -144,9 +190,16 @@ class DjangoDataSource extends Component {
         }
     }
 
+    /**
+     * Fetch JSON object at URL
+     *
+     * @param  {String} url
+     *
+     * @return {Promise<Object>}
+     */
     fetch(url) {
         let props = { url, list: false };
-        var request = this.findRequest(props);
+        let request = this.findRequest(props);
         if (!request) {
             request = this.addRequest(props)
             request.promise = fetch(url).then((response) => {
@@ -159,19 +212,37 @@ class DjangoDataSource extends Component {
         return request.promise;
     }
 
+    /**
+     * Find an existing request
+     *
+     * @param  {Object} props
+     *
+     * @return {Object|undefined}
+     */
     findRequest(props) {
         return this.requests.find((request) => {
             return match(request, props);
         });
     }
 
+    /**
+     * Add a request
+     *
+     * @param {Object} props
+     */
     addRequest(props) {
-        var request = Object.assign({ promise: null }, props);
-        this.requests = this.requests.concat(request);
+        let request = Object.assign({ promise: null }, props);
+        this.requests = [ request ].concat(this.requests);
         this.setState({ requests: this.requests });
         return request;
     }
 
+    /**
+     * Update a request
+     *
+     * @param  {Object} request
+     * @param  {Object} props
+     */
     updateRequest(request, props) {
         Object.assign(request, props);
         this.requests = this.requests.slice();
@@ -180,7 +251,7 @@ class DjangoDataSource extends Component {
 }
 
 function match(request, props) {
-    for (var name in props) {
+    for (let name in props) {
         if (request[name] !== props[name]) {
             return false;
         }

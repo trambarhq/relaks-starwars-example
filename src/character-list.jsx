@@ -4,9 +4,16 @@ import { AsyncComponent } from 'prelaks';
 /** @jsx h */
 
 class CharacterList extends AsyncComponent {
+    /**
+     * Retrieve remote data and render the synchronize half of this component
+     *
+     * @param  {Meanwhile}  meanwhile
+     *
+     * @return {VNode}
+     */
     async renderAsync(meanwhile) {
         let { swapi } = this.props;
-        var props = {
+        let props = {
             people: null,
             onSelect: this.props.onSelect,
         };
@@ -18,6 +25,11 @@ class CharacterList extends AsyncComponent {
 }
 
 class CharacterListSync extends Component {
+    /**
+     * Render the component, making best effort using what props are given
+     *
+     * @return {VNode}
+     */
     render() {
         let { people } = this.props;
         if (!people) {
@@ -27,7 +39,7 @@ class CharacterListSync extends Component {
             <ul className="character-list">
             {
                 people.map((person) => {
-                    var linkProps = {
+                    let linkProps = {
                         href: person.url,
                         onClick: this.handleClick,
                     };
@@ -44,8 +56,8 @@ class CharacterListSync extends Component {
 
     handleClick = (evt) => {
         if (evt.button === 0) {
-            var url = evt.currentTarget.href;
-            var person = this.props.people.find((person) => {
+            let url = evt.currentTarget.href;
+            let person = this.props.people.find((person) => {
                 return (person.url === url);
             });
             if (person && this.props.onSelect) {
