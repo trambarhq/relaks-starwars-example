@@ -1,0 +1,34 @@
+.character-list {
+    A {
+        &:link, &:visited {
+            text-decoration: none;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.character-page {
+    .return-link {
+        float: right;
+
+        &:link, &:visited {
+            text-decoration: none;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .pending {
+        opacity: 0.5;
+        cursor: wait;
+    }
+
+    .empty {
+        opacity: 0.25;
+    }
+}
