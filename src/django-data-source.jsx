@@ -258,5 +258,4 @@ function appendPage(url, page) {
 
 export {
     DjangoDataSource as default,
-    DjangoDataSource
 };

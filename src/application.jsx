@@ -1,8 +1,8 @@
 import { h, render, Component } from 'preact';
-import { DjangoDataSource } from 'django-data-source';
-import { SWAPI } from 'swapi';
-import { CharacterList } from 'character-list';
-import { CharacterPage } from 'character-page';
+import DjangoDataSource from 'django-data-source';
+import SWAPI from 'swapi';
+import CharacterList from 'character-list';
+import CharacterPage from 'character-page';
 
 import 'style.scss';
 
