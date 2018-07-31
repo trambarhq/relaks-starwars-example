@@ -4,6 +4,8 @@ import { AsyncComponent } from 'prelaks';
 /** @jsx h */
 
 class CharacterPage extends AsyncComponent {
+    static displayName = 'CharacterPage';
+
     /**
      * Retrieve remote data and render the synchronize half of this component
      *
@@ -24,21 +26,23 @@ class CharacterPage extends AsyncComponent {
             onReturn: this.props.onReturn,
         };
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.films = await swapi.fetchMultiple(person.films, { partial: 0.5 });
+        props.films = await swapi.fetchMultiple(person.films, { partial: 0.4 });
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.species = await swapi.fetchMultiple(person.species, { partial: 0.5 });
+        props.species = await swapi.fetchMultiple(person.species, { partial: 0.4 });
         meanwhile.show(<CharacterPageSync {...props} />);
         props.homeworld = await swapi.fetchOne(person.homeworld);
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.vehicles = await swapi.fetchMultiple(person.vehicles, { partial: 0.5 });
+        props.vehicles = await swapi.fetchMultiple(person.vehicles, { partial: 0.4 });
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.starships = await swapi.fetchMultiple(person.starships, { partial: 0.5 });
+        props.starships = await swapi.fetchMultiple(person.starships, { partial: 0.4 });
         meanwhile.show(<CharacterPageSync {...props} />);
         return <CharacterPageSync {...props} />;
     }
 }
 
 class CharacterPageSync extends Component {
+    static displayName = 'CharacterPageSync';
+
     /**
      * Render the component, making best effort using what props are given
      *

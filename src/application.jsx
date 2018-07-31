@@ -9,6 +9,8 @@ import 'style.scss';
 /** @jsx h */
 
 class Application extends Component {
+    static displayName = 'Application';
+
     constructor() {
         super();
         this.state = {

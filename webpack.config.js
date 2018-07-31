@@ -73,6 +73,10 @@ module.exports = {
             reportFilename: `report.html`,
         }),
     ],
+    devtool: (event === 'build') ? 'inline-source-map' : false,
+    devServer: {
+        inline: true,
+    }
 };
 
 var constants = {};
@@ -82,7 +86,8 @@ if (event === 'build') {
     // set NODE_ENV to production
     var plugins = module.exports.plugins;
     var constants = {
-        'process.env.NODE_ENV': '"production"'
+        'process.env.NODE_ENV': '"production"',
+        'process.env.INCLUDE_DISPLAY_NAME': 'true'
     };
     plugins.unshift(new DefinePlugin(constants));
 

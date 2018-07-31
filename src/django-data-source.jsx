@@ -1,6 +1,8 @@
 import { Component } from 'preact';
 
 class DjangoDataSource extends Component {
+    static displayName = 'DjangoDataSource';
+
     /**
      * Set initial state of component
      */
@@ -171,7 +173,16 @@ class DjangoDataSource extends Component {
         let partial = (options && options.partial !== undefined) ? options.partial : false;
         let minimum;
         if (typeof(partial) === 'number') {
-            minimum = urls.length * partial;
+            if (partial < 0) {
+                minimum = urls.length + partial;
+            } else if (partial < 1.0) {
+                minimum = urls.length * (1 - partial);
+            } else {
+                minimum = partial;
+            }
+            if (minimum < 0) {
+                minimum = 1;
+            }
         } else if (partial) {
             minimum = 1;
         } else {

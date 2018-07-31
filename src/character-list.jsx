@@ -4,6 +4,8 @@ import { AsyncComponent } from 'prelaks';
 /** @jsx h */
 
 class CharacterList extends AsyncComponent {
+    static displayName = 'CharacterList';
+
     /**
      * Retrieve remote data and render the synchronize half of this component
      *
@@ -25,6 +27,8 @@ class CharacterList extends AsyncComponent {
 }
 
 class CharacterListSync extends Component {
+    static displayName = 'CharacterListSync';
+
     /**
      * Render the component, making best effort using what props are given
      *
