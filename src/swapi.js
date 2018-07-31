@@ -1,5 +1,3 @@
-import { Component } from 'preact';
-
 const baseURL = 'https://swapi.co/api';
 
 class SWAPI {
@@ -59,5 +57,4 @@ function expandURL(url) {
 
 export {
     SWAPI as default,
-    SWAPI,
 };

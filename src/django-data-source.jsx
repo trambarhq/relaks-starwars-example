@@ -106,7 +106,7 @@ class DjangoDataSource extends Component {
                             this.triggerChangeEvent();
                         }
                         return results;
-                    }, (err) => {
+                    }).catch((err) => {
                         currentPromise = null;
                         throw err;
                     });
@@ -133,39 +133,26 @@ class DjangoDataSource extends Component {
     fetchMultiple(urls, options) {
         // see which ones are cached already
         let results = {};
-        let promises = {};
         let cached = 0;
-        urls.forEach((url) => {
+        let promises = urls.map((url) => {
             let request = this.findRequest({ url, list: false });
             if (request && request.result) {
                 results[url] = request.result;
                 cached++;
             } else {
-                promises[url] = this.fetchOne(url);
+                return this.fetchOne(url);
             }
         });
 
         // wait for the complete set to arrive
         let completeSetPromise;
         if (cached < urls.length) {
-            completeSetPromise = new Promise((resolve, reject) => {
-                urls.forEach((url) => {
-                    let promise = promises[url];
-                    if (promise) {
-                        promise.then((result) => {
-                            results[url] = result;
-                            cached++;
-                            if (cached === urls.length) {
-                                resolve(results);
-                            }
-                        }, (err) => {
-                            if (reject) {
-                                reject(err);
-                                reject = null;
-                            }
-                        });
-                    }
+            completeSetPromise = Promise.all(promises).then((objects) => {
+                let completeSet = {};
+                urls.forEach((url, index) => {
+                    completeSet[url] = objects[index] || results[url];
                 });
+                return completeSet;
             });
         }
 
@@ -197,7 +184,7 @@ class DjangoDataSource extends Component {
                     this.triggerChangeEvent();
                 });
             }
-            return Promise.resolve(Object.assign({}, results));
+            return Promise.resolve(results);
         }
     }
 
@@ -282,5 +269,4 @@ function appendPage(url, page) {
 
 export {
     DjangoDataSource as default,
-    DjangoDataSource
 };
