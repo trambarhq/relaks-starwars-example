@@ -1,5 +1,5 @@
 import { h, render, Component } from 'preact';
-import { AsyncComponent } from 'prelaks';
+import { AsyncComponent } from 'relaks/preact';
 
 /** @jsx h */
 
