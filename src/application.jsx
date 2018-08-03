@@ -1,4 +1,4 @@
-import { h, render, Component } from 'preact';
+import { h, Component } from 'preact';
 import DjangoDataSource from 'django-data-source';
 import SWAPI from 'swapi';
 import CharacterList from 'character-list';

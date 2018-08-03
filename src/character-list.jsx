@@ -1,4 +1,4 @@
-import { h, render, Component } from 'preact';
+import { h, Component } from 'preact';
 import { AsyncComponent } from 'relaks/preact';
 
 /** @jsx h */
