@@ -73,7 +73,7 @@ module.exports = {
             reportFilename: `report.html`,
         }),
     ],
-    devtool: (event === 'build') ? 'inline-source-map' : false,
+    devtool: (event === 'build') ? false : 'inline-source-map',
     devServer: {
         inline: true,
     }
