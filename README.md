@@ -36,8 +36,8 @@ another to render components that aren't visible:
 render() {
     return (
         <div>
-            {this.renderUserInterface()}
             {this.renderConfiguration()}
+            {this.renderUserInterface()}
         </div>
     );
 }

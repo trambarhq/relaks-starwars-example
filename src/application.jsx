@@ -27,8 +27,8 @@ class Application extends Component {
     render() {
         return (
             <div>
-                {this.renderUserInterface()}
                 {this.renderConfiguration()}
+                {this.renderUserInterface()}
             </div>
         );
     }
