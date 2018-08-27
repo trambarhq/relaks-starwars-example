@@ -26,15 +26,15 @@ class CharacterPage extends AsyncComponent {
             onReturn: this.props.onReturn,
         };
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.films = await swapi.fetchMultiple(person.films, { partial: 0.4 });
+        props.films = await swapi.fetchMultiple(person.films, { minimum: '60%' });
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.species = await swapi.fetchMultiple(person.species, { partial: 0.4 });
+        props.species = await swapi.fetchMultiple(person.species, { minimum: '60%' });
         meanwhile.show(<CharacterPageSync {...props} />);
         props.homeworld = await swapi.fetchOne(person.homeworld);
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.vehicles = await swapi.fetchMultiple(person.vehicles, { partial: 0.4 });
+        props.vehicles = await swapi.fetchMultiple(person.vehicles, { minimum: '60%' });
         meanwhile.show(<CharacterPageSync {...props} />);
-        props.starships = await swapi.fetchMultiple(person.starships, { partial: 0.4 });
+        props.starships = await swapi.fetchMultiple(person.starships, { minimum: '60%' });
         meanwhile.show(<CharacterPageSync {...props} />);
         return <CharacterPageSync {...props} />;
     }
@@ -87,10 +87,7 @@ class CharacterPageSync extends Component {
     renderHomeworld() {
         let { person, homeworld } = this.props;
         let urls = person.homeworld ? [ person.homeworld ] : [];
-        let homeworlds = {};
-        if (homeworld) {
-            homeworlds[urls[0]] = homeworld;
-        }
+        let homeworlds = homeworld ? [ homeworld ] : [];
         return this.renderList(urls, homeworlds, 'name');
     }
 
@@ -151,8 +148,8 @@ class CharacterPageSync extends Component {
         return (
             <ul>
             {
-                urls.map((url) => {
-                    let object = (objects) ? objects[url] : null;
+                urls.map((url, index) => {
+                    let object = (objects) ? objects[index] : null;
                     if (object) {
                         let text = object[field];
                         return <li>{text}</li>;

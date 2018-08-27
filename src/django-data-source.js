@@ -1,41 +1,14 @@
-import { Component } from 'preact';
-
-class DjangoDataSource extends Component {
-    static displayName = 'DjangoDataSource';
-
-    /**
-     * Set initial state of component
-     */
+class DjangoDataSource {
     constructor() {
-        super();
-        this.requests = [];
-        this.state = { requests: this.requests };
-    }
-
-    /**
-     * Render nothing
-     *
-     * @return {Null}
-     */
-    render() {
-        return null;
-    }
-
-    /**
-     * Trigger onChange on mount
-     *
-     * @return {[type]}
-     */
-    componentDidMount() {
-        this.triggerChangeEvent();
+        this.queries = [];
     }
 
     /**
      * Call the onChange handler
      */
     triggerChangeEvent() {
-        if (this.props.onChange) {
-            this.props.onChange({ type: 'change', target: this });
+        if (this.onChange) {
+            this.onChange({ type: 'change', target: this });
         }
     }
 
@@ -74,9 +47,9 @@ class DjangoDataSource extends Component {
         } else {
             // fetch pages on demand, concatenating them
             let props = { url, list: true };
-            let request = this.findRequest(props);
-            if (!request) {
-                request = this.addRequest(props)
+            let query = this.findQuery(props);
+            if (!query) {
+                query = this.addQuery(props)
 
                 // create fetch function
                 let nextURL = url;
@@ -91,7 +64,7 @@ class DjangoDataSource extends Component {
                         // append retrieved objects to list
                         let results = previousResults.concat(response.results);
                         let promise = Promise.resolve(results);
-                        this.updateRequest(request, { results, promise });
+                        this.updateQuery(query, { results, promise });
 
                         // attach function to results so caller can ask for more results
                         results.more = fetchNextPage;
@@ -114,77 +87,70 @@ class DjangoDataSource extends Component {
                 };
 
                 // call it for the first page
-                request.promise = fetchNextPage();
+                query.promise = fetchNextPage();
             }
-            return request.promise;
+            return query.promise;
         }
     }
 
     /**
-     * Fetch multiple JSON objects. If partial is specified, then immediately
+     * Fetch multiple JSON objects. If minimum is specified, then immediately
      * resolve with cached results when there're sufficient numbers of objects.
      * An onChange will be trigger once the full set is retrieved.
      *
      * @param  {Array<String>} urls
      * @param  {Object} options
      *
-     * @return {Promise<Object>}
+     * @return {Promise<Array>}
      */
     fetchMultiple(urls, options) {
         // see which ones are cached already
-        let results = {};
-        let cached = 0;
-        let promises = urls.map((url) => {
-            let request = this.findRequest({ url, list: false });
-            if (request && request.result) {
-                results[url] = request.result;
+        var _this = this;
+        var cached = 0;
+        var fetchOptions = {};
+        for (var name in options) {
+            if (name !== 'minimum') {
+                fetchOptions[name] = options[name];
+            }
+        }
+        var promises = urls.map(function(url) {
+            var props = { url: url, type: 'object' };
+            var query = _this.findQuery(props);
+            if (query && query.object) {
                 cached++;
+                return query.object;
             } else {
-                return this.fetchOne(url);
+                return _this.fetchOne(url, fetchOptions);
             }
         });
 
-        // wait for the complete set to arrive
-        let completeSetPromise;
+        // wait for the complete list to arrive
+        var completeListPromise;
         if (cached < urls.length) {
-            completeSetPromise = Promise.all(promises).then((objects) => {
-                let completeSet = {};
-                urls.forEach((url, index) => {
-                    completeSet[url] = objects[index] || results[url];
-                });
-                return completeSet;
-            });
+            completeListPromise = Promise.all(promises);
         }
 
         // see whether partial result set should be immediately returned
-        let partial = (options && options.partial !== undefined) ? options.partial : false;
-        let minimum;
-        if (typeof(partial) === 'number') {
-            if (partial < 0) {
-                minimum = urls.length + partial;
-            } else if (partial < 1.0) {
-                minimum = urls.length * (1 - partial);
-            } else {
-                minimum = partial;
-            }
-            if (minimum < 0) {
-                minimum = 1;
-            }
-        } else if (partial) {
-            minimum = 1;
+        let minimum = getMinimum(options, urls.length, urls.length);
+        if (cached < minimum && completeListPromise) {
+            return completeListPromise;
         } else {
-            minimum = urls.length;
-        }
-        if (cached < minimum && completeSetPromise) {
-            return completeSetPromise;
-        } else {
-            // return partial set then fire change event when complete set arrives
-            if (completeSetPromise) {
-                completeSetPromise.then(() => {
+            if (completeListPromise) {
+                // return partial list then fire change event when complete list arrives
+                completeListPromise.then(() => {
                     this.triggerChangeEvent();
                 });
+                return promises.map(function(object) {
+                    if (object.then instanceof Function) {
+                        return null;    // a promise--don't return it
+                    } else {
+                        return object;
+                    }
+                });
+            } else {
+                // list is complete already
+                return promises;
             }
-            return Promise.resolve(results);
         }
     }
 
@@ -197,60 +163,57 @@ class DjangoDataSource extends Component {
      */
     fetch(url) {
         let props = { url, list: false };
-        let request = this.findRequest(props);
-        if (!request) {
-            request = this.addRequest(props)
-            request.promise = fetch(url).then((response) => {
+        let query = this.findQuery(props);
+        if (!query) {
+            query = this.addQuery(props)
+            query.promise = fetch(url).then((response) => {
                 return response.json().then((result) => {
-                    this.updateRequest(request, { result });
+                    this.updateQuery(query, { result });
                     return result;
                 });
             });
         }
-        return request.promise;
+        return query.promise;
     }
 
     /**
-     * Find an existing request
+     * Find an existing query
      *
      * @param  {Object} props
      *
      * @return {Object|undefined}
      */
-    findRequest(props) {
-        return this.requests.find((request) => {
-            return match(request, props);
+    findQuery(props) {
+        return this.queries.find((query) => {
+            return match(query, props);
         });
     }
 
     /**
-     * Add a request
+     * Add a query
      *
      * @param {Object} props
      */
-    addRequest(props) {
-        let request = Object.assign({ promise: null }, props);
-        this.requests = [ request ].concat(this.requests);
-        this.setState({ requests: this.requests });
-        return request;
+    addQuery(props) {
+        let query = Object.assign({ promise: null }, props);
+        this.queries = [ query ].concat(this.queries);
+        return query;
     }
 
     /**
-     * Update a request
+     * Update a query
      *
-     * @param  {Object} request
+     * @param  {Object} query
      * @param  {Object} props
      */
-    updateRequest(request, props) {
-        Object.assign(request, props);
-        this.requests = this.requests.slice();
-        this.setState({ requests: this.requests });
+    updateQuery(query, props) {
+        Object.assign(query, props);
     }
 }
 
-function match(request, props) {
+function match(query, props) {
     for (let name in props) {
-        if (request[name] !== props[name]) {
+        if (query[name] !== props[name]) {
             return false;
         }
     }
@@ -267,6 +230,24 @@ function appendPage(url, page) {
     }
 }
 
+function getMinimum(options, total, def) {
+    let minimum = (options) ? options.minimum : undefined;
+    if (typeof(minimum) === 'string') {
+        if (minimum.charAt(minimum.length - 1) === '%') {
+            let percent = parseInt(minimum);
+            minimum = Math.ceil(total * (percent / 100));
+        }
+    }
+    if (minimum < 0) {
+        minimum = total - minimum;
+        if (minimum < 1) {
+            minimum = 1;
+        }
+    }
+    return minimum || def;
+}
+
 export {
     DjangoDataSource as default,
+    DjangoDataSource,
 };

@@ -1,5 +1,4 @@
 import { h, Component } from 'preact';
-import DjangoDataSource from 'django-data-source';
 import SWAPI from 'swapi';
 import CharacterList from 'character-list';
 import CharacterPage from 'character-page';
@@ -11,11 +10,12 @@ import 'style.scss';
 class Application extends Component {
     static displayName = 'Application';
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        let { dataSource } = this.props;
         this.state = {
             person: null,
-            swapi: null,
+            swapi: new SWAPI(dataSource),
         };
     }
 
@@ -25,24 +25,7 @@ class Application extends Component {
      * @return {VNode}
      */
     render() {
-        return (
-            <div>
-                {this.renderConfiguration()}
-                {this.renderUserInterface()}
-            </div>
-        );
-    }
-
-    /**
-     * Render the user interface
-     *
-     * @return {VNode|null}
-     */
-    renderUserInterface() {
         let { swapi, person } = this.state;
-        if (!swapi) {
-            return null;
-        }
         if (!person) {
             let props = { swapi, onSelect: this.handlePersonSelect };
             return <CharacterList {...props} />;
@@ -52,18 +35,14 @@ class Application extends Component {
         }
     }
 
-    /**
-     * Render non-visual components
-     *
-     * @return {VNode}
-     */
-    renderConfiguration() {
-        let props = { onChange: this.handleDataSourceChange };
-        return (
-            <div>
-                <DjangoDataSource {...props} />
-            </div>
-        );
+    componentDidMount() {
+        let { dataSource } = this.props;
+        dataSource.onChange = this.handleDataSourceChange;
+    }
+
+    componentWillUnmount() {
+        let { dataSource } = this.props;
+        dataSource.onChange = null;
     }
 
     /**
