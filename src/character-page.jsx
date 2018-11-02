@@ -14,16 +14,10 @@ class CharacterPage extends AsyncComponent {
      * @return {VNode}
      */
     async renderAsync(meanwhile) {
-        let { swapi, person } = this.props;
+        let { swapi, person, onReturn } = this.props;
         let props = {
-            homeworld: null,
-            films: null,
-            species: null,
-            vehicles: null,
-            starships: null,
-
             person,
-            onReturn: this.props.onReturn,
+            onReturn,
         };
         meanwhile.show(<CharacterPageSync {...props} />);
         props.films = await swapi.fetchMultiple(person.films, { minimum: '60%' });

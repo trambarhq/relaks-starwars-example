@@ -1,59 +1,43 @@
-# Relaks Star Wars Example
+Relaks Star Wars Example
+------------------------
+This is an example demonstrating how to build a data-driven web page using Relaks. [Relaks](https://github.com/chung-leong/relaks) is a [React](https://reactjs.org/) component that let you implement an asynchronous render method. In lieu of
+a `ReactElement`, `renderAsync()` returns a [promise](https://promisesaplus.com/) of a `ReactElement`. When the promise is fulfilled, the element is rendered.
 
-This is an example demonstrating how to build a data-driven web page using
-Relaks. [Relaks](https://github.com/chung-leong/relaks) is a [React](https://reactjs.org/)
-component that let you implement an asynchronous render method. In lieu of
-a `ReactElement`, `renderAsync()` returns a [promise](https://promisesaplus.com/)
-of a `ReactElement`. When the promise resolves itself, the element is rendered.
+This example actually employs [Preact](https://preactjs.com/). Aside from different import statements and initiation code, the example would work the same way with React. Preact was chosen because the small size and simplicity of Relaks will likely appeal most to developers using Preact.
 
-This example actually employs [Preact](https://preactjs.com/). Aside from
-different import statements and initiation code, the example would work the same
-way with React. Preact was chosen because the small size and simplicity of
-Relaks will likely appeal most to developer using Preact.
+The data source for this example is [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). The web page shows a list of Star Wars characters. When you click on a name, it shows additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
 
-The data source for this example is [swapi.co](https://swapi.co/), a public
-Star Wars knowledge base powered by [Django](https://www.djangoproject.com/).
-The web page shows a list of Star Wars characters. When you click on a name, it
-shows additional information about him/her/it. You can see it in action
-[here](https://trambar.io/examples/starwars-iv/).
+* [Getting started](#getting-started)
+* [Application](#application)
+* [Character list](#character-list)
+* [Character page](#character-page)
+* [Next step](#next-step)
 
 ## Getting started
 
-To see the code running in debug mode, first clone this repository. In the
-working folder, run `npm install`. Once that's done, run `npm run start` to
-launch [WebPack Dev Server](https://webpack.js.org/configuration/dev-server/).
-Open a browser window and enter `http://localhost:8080` as the location.
+To see the code running in debug mode, first clone this repository. In the working folder, run `npm install`. Once that's done, run `npm run start` to launch [WebPack Dev Server](https://webpack.js.org/configuration/dev-server/). Open a browser window and enter `http://localhost:8080` as the location.
 
-## Application Structure
+## Application
 
-Okay, let's dive into the code! **Application**
-([application.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/application.jsx))
-is the root node of the app. It's a regular Preact component. Its render
-function is very simple. It calls one method to render the user interface and
-another to render components that aren't visible:
+Okay, let's dive into the code! In [main.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's called when the HTML page emits a 'load' event. The function bootstraps the application. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then create the Preact element `Application`, using the data source as props. Finally it renders the element into a DOM node.
 
-```js
-render() {
-    return (
-        <div>
-            {this.renderConfiguration()}
-            {this.renderUserInterface()}
-        </div>
-    );
+```javascript
+function initialize(evt) {
+    let dataSource = new DjangoDataSource;
+    let appContainer = document.getElementById('app-container');
+    if (!appContainer) {
+        throw new Error('Unable to find app element in DOM');
+    }
+    let appElement = h(Application, { dataSource });
+    render(appElement, appContainer);
 }
 ```
 
-`renderUserInterface()` is also quite straight forward. It renders a
-**CharacterPage** component when a character is selected. Otherwise it renders
-a **CharacterList**. Note how both components receives `swapi`. That's the
-interface through which they retrieve needed data from [swapi.co](https://swapi.co/).
+`Application` ([application.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/application.jsx)) is the node of our our app. It's a regular Preact component. Its `render()` method is relatively simple:
 
-```js
-renderUserInterface() {
+```javascript
+render() {
     let { swapi, person } = this.state;
-    if (!swapi) {
-        return null;
-    }
     if (!person) {
         let props = { swapi, onSelect: this.handlePersonSelect };
         return <CharacterList {...props} />;
@@ -64,64 +48,34 @@ renderUserInterface() {
 }
 ```
 
-`renderConfiguration()` is even simpler. It renders just a single component:
-**DjangoDataSource**. This component is responsible for retrieving remote data.
-Its presence in the component tree means you can easily examine its state using
-[React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi).
+When no character is selected, it renders `CharacterList`. When one is selected, it renders `CharacterPage`. The object `swapi` is an instance of `SWAPI` ([swapi.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/swapi.js)) stored in `Application`'s state. It's a wrapper around the data source object. Whenever the data source emits a `change` event, `swapi` is recreated:
 
-```js
-renderConfiguration() {
-    let props = { onChange: this.handleDataSourceChange };
-    return (
-        <div>
-            <DjangoDataSource {...props} />
-        </div>
-    );
-}
-```
-
-**DjangoDataSource** accepts an `onChange` handler. It's triggered whenever new
-data becomes available--that is to say, when rerunning a query might produce
-different data than before. The handler is triggered when the component is
-mounted, to start the initial data loading process.
-
-Here's the method handle the event:
-
-```js
+```javascript
 handleDataSourceChange = (evt) => {
     this.setState({ swapi: new SWAPI(evt.target) });
 }
 ```
 
-**SWAPI** ([swapi.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/swapi.js))
-is a proxy object. Its main purpose is to let other components access methods of
-**DjangoDataSource**. While **DjangoDataSource** sits at the root of the
-component tree, **SWAPI** is meant to be passed throughout the tree, to any
-component that needs remote data.
+The call to `setState()` causes the component to rerender. Because `swapi` is a new object, it would trip the change detection mechanism in `shouldComponentUpdate()` of [pure components](https://reactjs.org/docs/react-api.html#reactpurecomponent). Relaks components are pure components by default. Whenever a `change` event occurs, the `renderAsync()` method of `CharacterList` or `CharacterPage` will run.
 
-The proxy object serves a second critical function. Because it's recreated
-whenever an `onChange` event occurs, it'll trip the `shouldComponentUpdate()`
-methods of ["pure" components](https://reactjs.org/docs/react-api.html#reactpurecomponent),
-as they usually make the determination based on a shallow comparison.
+The event handler is install in `Application`'s `componentDidMount()` method:
 
-While **DjangoDataSource** is supposed to be reusable, something that you might
-obtain from npmjs.com, the proxy object is project specific. You would write it
-(and name it however you like). It's a place where you can place your debugging
-code, convenience methods, and perhaps additional information needed by
-components of your app. For instance, it could be where native promises returned
-by the third-party code are converted to more powerful ones like
-[Bluebird](http://bluebirdjs.com).
+```javascript
+componentDidMount() {
+    let { dataSource } = this.props;
+    dataSource.onChange = this.handleDataSourceChange;
+}
+```
 
 ## Character List
 
-**CharacterList** ([character-list.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx))
+`CharacterList` ([character-list.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx))
 is a Relaks component. It implements `renderAsync()`:
 
 ```js
 async renderAsync(meanwhile) {
     let { swapi } = this.props;
     let props = {
-        people: null,
         onSelect: this.props.onSelect,
     };
     meanwhile.show(<CharacterListSync {...props} />);
@@ -131,46 +85,22 @@ async renderAsync(meanwhile) {
 }
 ```
 
-Note the method's one parameter. The **Meanwhile** object lets you control the
-component's behavior in the time prior to the resolution of the promise it
-returns--i.e. while the asynchronous operation is ongoing. Here, the method
-asks that a **CharacterListSync** be shown (with a prop still missing). It then
-makes a request for a list of people in the Star Wars universe and waits for the
-response. Execution of the method is halted at this point. When the data arrives,
-execution resumes. The method schedules the retrieval of the next page of data.
-It then return another **CharacterListSync**, this time with `props.people` set
-to an array of objects.
+Note the method's one parameter. The `Meanwhile` object lets you control the component's behavior in the time prior to the fulfillment of the promise returned by `renderAsync()`--i.e. while asynchronous operations are ongoing. Here, the method
+asks that a `CharacterListSync` be shown (with `props.people` still undefined). It then makes a request for a list of people in the Star Wars universe and waits for the response. Execution of the method is halted at this point. When the data arrives, execution resumes. The method schedules the retrieval of the next page of data. It then return another `CharacterListSync`, this time with `props.people` set to an array of objects.
 
-When the next page of data arrives, **DjangoDataSource** fires an onChange
-event. `renderAsync()` will get called again due to a prop change. `fetchList()`
-will return an array with more objects than before. `more()` is called and
-another request for data is made. The process repeats itself until we've
-reached the end of the list.
+When the next page of data arrives, `DjangoDataSource` fires an `change` event. `renderAsync()` will get called again due to the prop change (namely `swapi`). `fetchList()` will return an array with more objects than before. `more()` is called and
+another request for data is made. The process repeats itself until we've reached the end of the list.
 
-As the list of Star Wars characters isn't particularly long, retrieving the full
-list is pretty sensible. In a more sophisticated implementation, one that deals
-with large data sets, `.more()` would likely be called in `onScroll` handler
-instead.
+As the list of Star Wars characters isn't particularly long, retrieving the full list is pretty sensible. In a more sophisticated implementation, one that deals with large data sets, `.more()` would likely be called in a `scroll` event handler instead.
 
-**CharacterListSync** ([in the same file](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx))
-is a regular Preact component. It's the component that actually draws the
-interface, while the async component merely retrieves data. Splitting up
-responsibilities in this way has some important benefits:
+`CharacterListSync` ([same file](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx)) is a regular Preact component. It's the component that actually draws the interface, while the async component merely retrieves the needed data. Splitting up responsibilities in this way has some important benefits:
 
 1. You can easily examine the retrieved data during React Developer Tools.
-2. If the sync component extends **PureComponent** (not done in the example), it
-   wouldn't rerender when the async component fetches the exact same data as
-   before.
-3. The sync component can be more easily tested using automated test tools
-   (karma, enzyme, etc).
-4. The sync component can be developed in isolation. Suppose our data retrieval
-   code is still very buggy--or the backend isn't ready yet. A developer, whose
-   expertise is perhaps mainly in layout and CSS, can still work on the
-   component. All he has to do is export **CharacterListSync** as
-   **CharacterList** and attach some dummy data as the sync component's default
-   props.
+2. If the sync component extends `PureComponent` (not done in the example), it wouldn't rerender when the async component fetches the exact same data as before.
+3. The sync component can be more easily tested using automated test tools (karma, enzyme, etc).
+4. The sync component can be developed in isolation. Suppose our data retrieval code is still very buggy--or the backend isn't ready yet. A developer, whose expertise is perhaps mainly in layout and CSS, can still work on the component. All he has to do is export `CharacterListSync` as `CharacterList` and attach some dummy data as the sync component's default props.
 
-The render method of **CharacterListSync** is entirely mundane:
+The render method of `CharacterListSync` is entirely mundane:
 
 ```js
 render() {
@@ -198,66 +128,46 @@ render() {
 }
 ```
 
-`Meanwhile.show()` operates on a timer. The promise returned by `renderAsync()`
-have a 50ms to resolve itself before the component shows the contents given to
-`Meanwhile.show()`. When data is cached and promises fulfill rapidly, the
-loading message would not appear at all.
+`Meanwhile.show()` operates on a timer. The promise returned by `renderAsync()` have a 50ms to fulfill itself before the component shows the contents given to `Meanwhile.show()`. When data is cached and promises resolve rapidly, the loading message would not appear at all.
 
 ## Character Page
 
-**CharacterPage** ([character-page.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-page.jsx))
-is another Relaks component. Its `renderAsync()` method is slightly more complex:
+**CharacterPage** ([character-page.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-page.jsx)) is another Relaks component. Its `renderAsync()` method is slightly more complex:
 
 ```js
 async renderAsync(meanwhile) {
-        let { swapi, person } = this.props;
-        let props = {
-            homeworld: null,
-            films: null,
-            species: null,
-            vehicles: null,
-            starships: null,
-
-            person,
-            onReturn: this.props.onReturn,
-        };
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.films = await swapi.fetchMultiple(person.films, { partial: 0.4 });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.species = await swapi.fetchMultiple(person.species, { partial: 0.4 });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.homeworld = await swapi.fetchOne(person.homeworld);
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.vehicles = await swapi.fetchMultiple(person.vehicles, { partial: 0.4 });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.starships = await swapi.fetchMultiple(person.starships, { partial: 0.4 });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        return <CharacterPageSync {...props} />;
-    }
+    let { swapi, person, onReturn } = this.props;
+    let props = {
+        person,
+        onReturn,
+    };
+    meanwhile.show(<CharacterPageSync {...props} />);
+    props.films = await swapi.fetchMultiple(person.films, { minimum: '60%' });
+    meanwhile.show(<CharacterPageSync {...props} />);
+    props.species = await swapi.fetchMultiple(person.species, { minimum: '60%' });
+    meanwhile.show(<CharacterPageSync {...props} />);
+    props.homeworld = await swapi.fetchOne(person.homeworld);
+    meanwhile.show(<CharacterPageSync {...props} />);
+    props.vehicles = await swapi.fetchMultiple(person.vehicles, { minimum: '60%' });
+    meanwhile.show(<CharacterPageSync {...props} />);
+    props.starships = await swapi.fetchMultiple(person.starships, { minimum: '60%' });
+    meanwhile.show(<CharacterPageSync {...props} />);
+    return <CharacterPageSync {...props} />;
+}
 ```
 
-In succession we retrieve the films in which the character appeared, his
-species, his homeworld, and vehicles he has driven or piloted. We wait each time
-for the data to arrive, place it into `props` and call `Meanwhile.show()`. In
-this manner the page renders progressively. For the end-user, the page will feel
-responsive because things appears as soon as he clicks the link.
+In succession we retrieve the `films` in which the character appeared, his `species`, his `homeworld`, the `vehicles` he has driven, and the `starships` he has piloted. We wait each time for the data to arrive, place it into `props` and call `Meanwhile.show()`. In this manner the page renders progressively. For the end-user, the page will feel responsive because things appears as soon as he clicks the link.
 
-Data requests are ordered pragmatically. We know that the film list is likely
-the first piece of information the user seeks. We also know that the list is
-likely to be fully cached. That's why it's retrieved first. Conversely, we know
-the list of starships is at the bottom of the page, where it might not be
-visible initially. We can therefore retrieve it last.
+Data requests are ordered pragmatically. We know that the film list is likely the first piece of information the user seeks. We also know that the list is more likely to be fully cached. That's why it's fetched first. Conversely, we know
+the list of starships is at the bottom of the page, where it might not be visible initially. We can therefore fetch it last.
 
-You will likely make similar decisions with your own app. Mouse-overs and
-pop-ups are frequently used to show supplemental details. These should always
-be fetched after the primary information. Since it takes a second or two for
-the user to position the mouse cursor (or his finger) over the button, there's
-ample time for the data to arrive.
+You will likely make similar decisions with your own app. Mouse-overs and pop-ups are frequently used to show supplemental details. These should always be fetched after the primary information. Since it takes a second or two for the user to position the mouse cursor (or his finger) over the button, there's ample time for the data to arrive.
 
-**CharacterPageSync** is responsible for drawing the page. There's nothing
-noteworthy about its `render()` method. It's just run-of-the-mill React code:
+The minimum percentage given to `fetchMultiple()` is another trick used to improve perceived responsiveness. It tells `DjangoDataSource` that we wish to receive partial a result-set immediately if 60% of the items requested can be found in the cache. That allows us to show a list that's largely complete instead of a blank. When the full result-set finally arrives, `DjangoDataSource` will emit a `change` event. Subsequent rerendering then fills in the gaps.
 
-```js
+`CharacterPageSync` ([same file](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-page.jsx)) is responsible for drawing the page. There's nothing noteworthy about its `render()` method. It's just run-of-the-mill React code:
+
+```javascript
 render() {
     let { person } = this.props;
     let linkProps = {
@@ -289,3 +199,7 @@ render() {
     );
 }
 ```
+
+## Next step
+
+The application in this example is fairly crude. In the [following up example](https://gitlab.trambar.io/open-source/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
