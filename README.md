@@ -67,7 +67,7 @@ componentDidMount() {
 }
 ```
 
-## Character List
+## Character list
 
 `CharacterList` ([character-list.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx))
 is a Relaks component. It implements `renderAsync()`:
@@ -130,7 +130,7 @@ render() {
 
 `Meanwhile.show()` operates on a timer. The promise returned by `renderAsync()` have a 50ms to fulfill itself before the component shows the contents given to `Meanwhile.show()`. When data is cached and promises resolve rapidly, the loading message would not appear at all.
 
-## Character Page
+## Character page
 
 **CharacterPage** ([character-page.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-page.jsx)) is another Relaks component. Its `renderAsync()` method is slightly more complex:
 
