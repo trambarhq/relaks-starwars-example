@@ -202,4 +202,4 @@ render() {
 
 ## Next step
 
-The application in this example is fairly crude. In the [following up example](https://gitlab.trambar.io/open-source/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
+The application in this example is fairly crude. In the [following up example](https://github.com/chung-leong/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
