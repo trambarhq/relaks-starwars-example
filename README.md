@@ -7,6 +7,8 @@ This example actually employs [Preact](https://preactjs.com/). Aside from differ
 
 The data source for this example is [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). The web page shows a list of Star Wars characters. When you click on a name, it shows additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
 
+![Screenshot](docs/img/screenshot.png)
+
 * [Getting started](#getting-started)
 * [Application](#application)
 * [Character list](#character-list)
