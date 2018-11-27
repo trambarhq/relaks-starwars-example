@@ -19,6 +19,8 @@ The data source for this example is [swapi.co](https://swapi.co/), a public Star
 
 To see the code running in debug mode, first clone this repository. In the working folder, run `npm install`. Once that's done, run `npm run start` to launch [WebPack Dev Server](https://webpack.js.org/configuration/dev-server/). Open a browser window and enter `http://localhost:8080` as the location.
 
+The example assume that you're familiar with React and the npm/WebPack tool-chain. If you're not, you should first consult the [React tutorial](https://reactjs.org/docs/getting-started.html). Also read [this document](docs/configuration.md) describing the example's configuration files.
+
 ## Application
 
 Okay, let's dive into the code! In [main.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's called when the HTML page emits a 'load' event. The function bootstraps the application. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then create the Preact element `Application`, using the data source as props. Finally it renders the element into a DOM node.

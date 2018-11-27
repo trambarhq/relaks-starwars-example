@@ -41,10 +41,6 @@ module.exports = {
                 }
             },
             {
-                test: /\.css$/,
-                loader: 'css-loader'
-            },
-            {
                 test: /\.scss$/,
                 use: [
                     'style-loader',
@@ -73,7 +69,6 @@ module.exports = {
     }
 };
 
-var constants = {};
 if (event === 'build') {
     console.log('Optimizing JS code');
 
@@ -88,7 +83,7 @@ if (event === 'build') {
     plugins.unshift(new UglifyJSPlugin({
         uglifyOptions: {
             compress: {
-              drop_console: true,
+                drop_console: true,
             }
         }
     }));
