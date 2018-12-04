@@ -1,11 +1,8 @@
 Relaks Star Wars Example
 ------------------------
-This is an example demonstrating how to build a data-driven web page using Relaks. [Relaks](https://github.com/chung-leong/relaks) is a [React](https://reactjs.org/) component that let you implement an asynchronous render method. In lieu of
-a `ReactElement`, `renderAsync()` returns a [promise](https://promisesaplus.com/) of a `ReactElement`. When the promise is fulfilled, the element is rendered.
+This is an example demonstrating how to build a data-driven web page using [Relaks](https://github.com/chung-leong/relaks). In lieu of React proper, we'll be using [Preact](https://preactjs.com/). Aside from different import statements and initiation code, the example would work the same way with React. Preact was chosen because the small size and simplicity of Relaks will likely appeal most to developers using Preact.
 
-This example actually employs [Preact](https://preactjs.com/). Aside from different import statements and initiation code, the example would work the same way with React. Preact was chosen because the small size and simplicity of Relaks will likely appeal most to developers using Preact.
-
-The data source for this example is [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). The web page shows a list of Star Wars characters. When you click on a name, it shows additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
+The data source for this example will be [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). The web page shows a list of Star Wars characters. When you click on a name, it shows additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
 
 ![Screenshot](docs/img/screenshot.png)
 
@@ -23,7 +20,7 @@ The example assume that you're familiar with React and the npm/WebPack tool-chai
 
 ## Application
 
-Okay, let's dive into the code! In [main.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's called when the HTML page emits a 'load' event. The function bootstraps the application. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then create the Preact element `Application`, using the data source as props. Finally it renders the element into a DOM node.
+Okay, let's dive into the code! In [main.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's invoked when the HTML page emits a 'load' event. The function bootstraps the application. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then creates the Preact element `Application`, using the data source as a prop. Finally it renders the element into a DOM node.
 
 ```javascript
 function initialize(evt) {
@@ -37,7 +34,7 @@ function initialize(evt) {
 }
 ```
 
-`Application` ([application.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/application.jsx)) is the node of our our app. It's a regular Preact component. Its `render()` method is relatively simple:
+`Application` ([application.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/application.jsx)) is the root node of our app. It's a regular Preact component. Its `render()` method is relatively simple:
 
 ```javascript
 render() {
@@ -73,8 +70,7 @@ componentDidMount() {
 
 ## Character list
 
-`CharacterList` ([character-list.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx))
-is a Relaks component. It implements `renderAsync()`:
+`CharacterList` ([character-list.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx)) is a Relaks component. It implements `renderAsync()`:
 
 ```js
 async renderAsync(meanwhile) {
@@ -89,17 +85,16 @@ async renderAsync(meanwhile) {
 }
 ```
 
-Note the method's one parameter. The `Meanwhile` object lets you control the component's behavior in the time prior to the fulfillment of the promise returned by `renderAsync()`--i.e. while asynchronous operations are ongoing. Here, the method
+Note the method's sole argument. The `meanwhile` object lets you control the component's behavior in the time prior to the fulfillment of the promise returned by `renderAsync()`--i.e. while asynchronous operations are ongoing. Here, the method
 asks that a `CharacterListSync` be shown (with `props.people` still undefined). It then makes a request for a list of people in the Star Wars universe and waits for the response. Execution of the method is halted at this point. When the data arrives, execution resumes. The method schedules the retrieval of the next page of data. It then return another `CharacterListSync`, this time with `props.people` set to an array of objects.
 
-When the next page of data arrives, `DjangoDataSource` fires an `change` event. `renderAsync()` will get called again due to the prop change (namely `swapi`). `fetchList()` will return an array with more objects than before. `more()` is called and
-another request for data is made. The process repeats itself until we've reached the end of the list.
+When the next page of data arrives, `DjangoDataSource` fires an `change` event. `renderAsync()` will get called again due to the prop change (namely `swapi`). `fetchList()` will return an array with more objects than before. `more()` is called and another request for data is made. The process repeats itself until we've reached the end of the list.
 
-As the list of Star Wars characters isn't particularly long, retrieving the full list is pretty sensible. In a more sophisticated implementation, one that deals with large data sets, `.more()` would likely be called in a `scroll` event handler instead.
+As the list of Star Wars characters isn't particularly long, retrieving the full list is pretty sensible. In a more sophisticated implementation, one that deals with larger data sets, `.more()` would be called in a `scroll` event handler instead.
 
-`CharacterListSync` ([same file](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx)) is a regular Preact component. It's the component that actually draws the interface, while the async component merely retrieves the needed data. Splitting up responsibilities in this way has some important benefits:
+`CharacterListSync` ([same file](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx)) is a regular Preact component. It's the component that actually draws the interface, whereas the async component merely retrieves the needed data. Splitting up responsibilities in this way has some important benefits:
 
-1. You can easily examine the retrieved data during React Developer Tools.
+1. You can easily examine the retrieved data using React Developer Tools.
 2. If the sync component extends `PureComponent` (not done in the example), it wouldn't rerender when the async component fetches the exact same data as before.
 3. The sync component can be more easily tested using automated test tools (karma, enzyme, etc).
 4. The sync component can be developed in isolation. Suppose our data retrieval code is still very buggy--or the backend isn't ready yet. A developer, whose expertise is perhaps mainly in layout and CSS, can still work on the component. All he has to do is export `CharacterListSync` as `CharacterList` and attach some dummy data as the sync component's default props.
@@ -132,7 +127,7 @@ render() {
 }
 ```
 
-`Meanwhile.show()` operates on a timer. The promise returned by `renderAsync()` have a 50ms to fulfill itself before the component shows the contents given to `Meanwhile.show()`. When data is cached and promises resolve rapidly, the loading message would not appear at all.
+`meanwhile.show()` operates on a timer. The promise returned by `renderAsync()` have a 50ms to fulfill itself before the component shows the contents given to `meanwhile.show()`. When data is cached and promises resolve rapidly, the loading message would not appear at all.
 
 ## Character page
 
@@ -160,9 +155,9 @@ async renderAsync(meanwhile) {
 }
 ```
 
-In succession we retrieve the `films` in which the character appeared, his `species`, his `homeworld`, the `vehicles` he has driven, and the `starships` he has piloted. We wait each time for the data to arrive, place it into `props` and call `Meanwhile.show()`. In this manner the page renders progressively. For the end-user, the page will feel responsive because things appears as soon as he clicks the link.
+In succession we retrieve the `films` in which the character appeared, his `species`, his `homeworld`, the `vehicles` he has driven, and the `starships` he has piloted. We wait each time for the data to arrive, place it into `props` and call `meanwhile.show()`. In this manner the page renders progressively. For the end-user, the page will feel responsive because things appears as soon as he clicks the link.
 
-Data requests are ordered pragmatically. We know that the film list is likely the first piece of information the user seeks. We also know that the list is more likely to be fully cached. That's why it's fetched first. Conversely, we know
+Data requests are ordered pragmatically. We know that the film list is likely the first piece of information a visitor seeks. We also know that the list is more likely to be fully cached. That's why it's fetched first. Conversely, we know
 the list of starships is at the bottom of the page, where it might not be visible initially. We can therefore fetch it last.
 
 You will likely make similar decisions with your own app. Mouse-overs and pop-ups are frequently used to show supplemental details. These should always be fetched after the primary information. Since it takes a second or two for the user to position the mouse cursor (or his finger) over the button, there's ample time for the data to arrive.
