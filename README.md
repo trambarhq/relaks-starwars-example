@@ -1,8 +1,8 @@
 Relaks Star Wars Example
 ------------------------
-This is an example demonstrating how to build a data-driven web page using [Relaks](https://github.com/chung-leong/relaks). In lieu of React proper, we'll be using [Preact](https://preactjs.com/). Aside from different import statements and initiation code, the example would work the same way with React. Preact was chosen because the small size and simplicity of Relaks will likely appeal most to developers using Preact.
+This is an example demonstrating how to build a data-driven web page using [Relaks](https://github.com/chung-leong/relaks). Instead of React proper, we'll be using [Preact](https://preactjs.com/). Aside from different import statements and initiation code, the example would work the same way with React. Preact was chosen because the small size and simplicity of Relaks will likely appeal most to fans of Preact.
 
-The data source for this example will be [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). The web page shows a list of Star Wars characters. When you click on a name, it shows additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
+The data source for this example is [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). The web page shows a list of Star Wars characters. When you click on a name, it shows additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
 
 ![Screenshot](docs/img/screenshot.png)
 
@@ -201,4 +201,4 @@ render() {
 
 ## Next step
 
-The application in this example is fairly crude. In the [following up example](https://github.com/chung-leong/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
+The application in this example is fairly crude. In the [follow up example](https://github.com/chung-leong/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
