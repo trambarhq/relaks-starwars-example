@@ -10,11 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:chung-leong/relaks-starwars-example.git"
+    "url": "git@github.com:trambarhq/relaks-starwars-example.git"
   },
   "author": "Chung Leong",
   "license": "MIT",
-  "homepage": "https://github.com/chung-leong/relaks-starwars-example",
+  "homepage": "https://github.com/trambarhq/relaks-starwars-example",
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",

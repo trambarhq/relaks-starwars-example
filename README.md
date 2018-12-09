@@ -1,6 +1,6 @@
 Relaks Star Wars Example
 ------------------------
-This is an example demonstrating how to build a data-driven web page using [Relaks](https://github.com/chung-leong/relaks). Instead of React proper, we'll be using [Preact](https://preactjs.com/). Aside from different import statements and initiation code, the example would work the same way with React. Preact was chosen because the small size and simplicity of Relaks will likely appeal most to fans of Preact.
+This is an example demonstrating how to build a data-driven web page using [Relaks](https://github.com/trambarhq/relaks). Instead of React proper, we'll be using [Preact](https://preactjs.com/). Aside from different import statements and initiation code, the example would work the same way with React. Preact was chosen because the small size and simplicity of Relaks will likely appeal most to fans of Preact.
 
 The data source for this example is [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). The web page shows a list of Star Wars characters. When you click on a name, it shows additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
 
@@ -20,7 +20,7 @@ The example assume that you're familiar with React and the npm/WebPack tool-chai
 
 ## Application
 
-Okay, let's dive into the code! In [main.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's invoked when the HTML page emits a 'load' event. The function bootstraps the application. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then creates the Preact element `Application`, using the data source as a prop. Finally it renders the element into a DOM node.
+Okay, let's dive into the code! In [main.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's invoked when the HTML page emits a 'load' event. The function bootstraps the application. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then creates the Preact element `Application`, using the data source as a prop. Finally it renders the element into a DOM node.
 
 ```javascript
 function initialize(evt) {
@@ -34,7 +34,7 @@ function initialize(evt) {
 }
 ```
 
-`Application` ([application.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/application.jsx)) is the root node of our app. It's a regular Preact component. Its `render()` method is relatively simple:
+`Application` ([application.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/application.jsx)) is the root node of our app. It's a regular Preact component. Its `render()` method is relatively simple:
 
 ```javascript
 render() {
@@ -49,7 +49,7 @@ render() {
 }
 ```
 
-When no character is selected, it renders `CharacterList`. When one is selected, it renders `CharacterPage`. The object `swapi` is an instance of `SWAPI` ([swapi.js](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/swapi.js)) stored in `Application`'s state. It's a wrapper around the data source object. Whenever the data source emits a `change` event, `swapi` is recreated:
+When no character is selected, it renders `CharacterList`. When one is selected, it renders `CharacterPage`. The object `swapi` is an instance of `SWAPI` ([swapi.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/swapi.js)) stored in `Application`'s state. It's a wrapper around the data source object. Whenever the data source emits a `change` event, `swapi` is recreated:
 
 ```javascript
 handleDataSourceChange = (evt) => {
@@ -70,7 +70,7 @@ componentDidMount() {
 
 ## Character list
 
-`CharacterList` ([character-list.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx)) is a Relaks component. It implements `renderAsync()`:
+`CharacterList` ([character-list.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/character-list.jsx)) is a Relaks component. It implements `renderAsync()`:
 
 ```js
 async renderAsync(meanwhile) {
@@ -92,7 +92,7 @@ When the next page of data arrives, `DjangoDataSource` fires an `change` event. 
 
 As the list of Star Wars characters isn't particularly long, retrieving the full list is pretty sensible. In a more sophisticated implementation, one that deals with larger data sets, `.more()` would be called in a `scroll` event handler instead.
 
-`CharacterListSync` ([same file](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-list.jsx)) is a regular Preact component. It's the component that actually draws the interface, whereas the async component merely retrieves the needed data. Splitting up responsibilities in this way has some important benefits:
+`CharacterListSync` ([same file](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/character-list.jsx)) is a regular Preact component. It's the component that actually draws the interface, whereas the async component merely retrieves the needed data. Splitting up responsibilities in this way has some important benefits:
 
 1. You can easily examine the retrieved data using React Developer Tools.
 2. If the sync component extends `PureComponent` (not done in the example), it wouldn't rerender when the async component fetches the exact same data as before.
@@ -131,7 +131,7 @@ render() {
 
 ## Character page
 
-**CharacterPage** ([character-page.jsx](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-page.jsx)) is another Relaks component. Its `renderAsync()` method is slightly more complex:
+**CharacterPage** ([character-page.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/character-page.jsx)) is another Relaks component. Its `renderAsync()` method is slightly more complex:
 
 ```js
 async renderAsync(meanwhile) {
@@ -164,7 +164,7 @@ You will likely make similar decisions with your own app. Mouse-overs and pop-up
 
 The minimum percentage given to `fetchMultiple()` is another trick used to improve perceived responsiveness. It tells `DjangoDataSource` that we wish to receive partial a result-set immediately if 60% of the items requested can be found in the cache. That allows us to show a list that's largely complete instead of a blank. When the full result-set finally arrives, `DjangoDataSource` will emit a `change` event. Subsequent rerendering then fills in the gaps.
 
-`CharacterPageSync` ([same file](https://github.com/chung-leong/relaks-starwars-example/blob/master/src/character-page.jsx)) is responsible for drawing the page. There's nothing noteworthy about its `render()` method. It's just run-of-the-mill React code:
+`CharacterPageSync` ([same file](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/character-page.jsx)) is responsible for drawing the page. There's nothing noteworthy about its `render()` method. It's just run-of-the-mill React code:
 
 ```javascript
 render() {
@@ -201,4 +201,4 @@ render() {
 
 ## Next step
 
-The application in this example is fairly crude. In the [follow up example](https://github.com/chung-leong/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
+The application in this example is fairly crude. In the [follow up example](https://github.com/trambarhq/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
