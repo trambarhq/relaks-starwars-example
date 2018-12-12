@@ -85,7 +85,7 @@ async renderAsync(meanwhile) {
 }
 ```
 
-Note the method's sole argument. The `meanwhile` object lets you control the component's behavior in the time prior to the fulfillment of the promise returned by `renderAsync()`--i.e. while asynchronous operations are ongoing. Here, the method
+Note the method's sole argument. The `meanwhile` object lets you control the component's behavior prior to the fulfillment of the promise returned by `renderAsync()`--i.e. while asynchronous operations are ongoing. Here, the method
 asks that a `CharacterListSync` be shown (with `props.people` still undefined). It then makes a request for a list of people in the Star Wars universe and waits for the response. Execution of the method is halted at this point. When the data arrives, execution resumes. The method schedules the retrieval of the next page of data. It then return another `CharacterListSync`, this time with `props.people` set to an array of objects.
 
 When the next page of data arrives, `DjangoDataSource` fires an `change` event. `renderAsync()` will get called again due to the prop change (namely `swapi`). `fetchList()` will return an array with more objects than before. `more()` is called and another request for data is made. The process repeats itself until we've reached the end of the list.
