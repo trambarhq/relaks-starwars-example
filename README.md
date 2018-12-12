@@ -59,7 +59,7 @@ handleDataSourceChange = (evt) => {
 
 The call to `setState()` causes the component to rerender. Because `swapi` is a new object, it would trip the change detection mechanism in `shouldComponentUpdate()` of [pure components](https://reactjs.org/docs/react-api.html#reactpurecomponent). Relaks components are pure components by default. Whenever a `change` event occurs, the `renderAsync()` method of `CharacterList` or `CharacterPage` will run.
 
-The event handler is install in `Application`'s `componentDidMount()` method:
+The event handler is installed in `Application`'s `componentDidMount()` method:
 
 ```javascript
 componentDidMount() {
