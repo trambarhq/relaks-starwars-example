@@ -162,7 +162,7 @@ the list of starships is at the bottom of the page, where it might not be visibl
 
 You will likely make similar decisions with your own app. Mouse-overs and pop-ups are frequently used to show supplemental details. These should always be fetched after the primary information. Since it takes a second or two for the user to position the mouse cursor (or his finger) over the button, there's ample time for the data to arrive.
 
-The minimum percentage given to `fetchMultiple()` is another trick used to improve perceived responsiveness. It tells `DjangoDataSource` that we wish to receive partial a result-set immediately if 60% of the items requested can be found in the cache. That allows us to show a list that's largely complete instead of a blank. When the full result-set finally arrives, `DjangoDataSource` will emit a `change` event. Subsequent rerendering then fills in the gaps.
+The minimum percentage given to `fetchMultiple()` is another trick used to improve perceived responsiveness. It tells `DjangoDataSource` that we wish to receive a partial result-set immediately if 60% of the items requested can be found in the cache. That allows us to show a list that's largely complete instead of a blank. When the full result-set finally arrives, `DjangoDataSource` will emit a `change` event. Subsequent rerendering then fills in the gaps.
 
 `CharacterPageSync` ([same file](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/character-page.jsx)) is responsible for drawing the page. There's nothing noteworthy about its `render()` method. It's just run-of-the-mill React code:
 
