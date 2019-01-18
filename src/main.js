@@ -1,6 +1,6 @@
 import 'preact/devtools';
 import { h, render } from 'preact';
-import { Application } from 'application';
+import { FrontEnd } from 'front-end';
 import DjangoDataSource from 'django-data-source';
 
 window.addEventListener('load', initialize);
@@ -11,6 +11,6 @@ function initialize(evt) {
     if (!appContainer) {
         throw new Error('Unable to find app element in DOM');
     }
-    let appElement = h(Application, { dataSource });
+    let appElement = h(FrontEnd, { dataSource });
     render(appElement, appContainer);
 }

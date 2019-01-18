@@ -7,7 +7,7 @@ The data source for this example is [swapi.co](https://swapi.co/), a public Star
 ![Screenshot](docs/img/screenshot.png)
 
 * [Getting started](#getting-started)
-* [Application](#application)
+* [FrontEnd](#frontend)
 * [Character list](#character-list)
 * [Character page](#character-page)
 * [Next step](#next-step)
@@ -18,9 +18,9 @@ To see the code running in debug mode, first clone this repository. In the worki
 
 The example assume that you're familiar with React and the npm/WebPack tool-chain. If you're not, you should first consult the [React tutorial](https://reactjs.org/docs/getting-started.html). Also read [this document](docs/configuration.md) describing the example's configuration files.
 
-## Application
+## FrontEnd
 
-Okay, let's dive into the code! In [main.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's invoked when the HTML page emits a 'load' event. The function bootstraps the application. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then creates the Preact element `Application`, using the data source as a prop. Finally it renders the element into a DOM node.
+Okay, let's dive into the code! In [main.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/main.js), you'll find the function `initialize()`. It's invoked when the HTML page emits a 'load' event. The function bootstraps the front-end. First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then creates the Preact element `FrontEnd`, using the data source as a prop. Finally it renders the element into a DOM node.
 
 ```javascript
 function initialize(evt) {
@@ -29,12 +29,12 @@ function initialize(evt) {
     if (!appContainer) {
         throw new Error('Unable to find app element in DOM');
     }
-    let appElement = h(Application, { dataSource });
+    let appElement = h(FrontEnd, { dataSource });
     render(appElement, appContainer);
 }
 ```
 
-`Application` ([application.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/application.jsx)) is the root node of our app. It's a regular Preact component. Its `render()` method is relatively simple:
+`FrontEnd` ([front-end.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/front-end.jsx)) is the root node of our app. It's a regular Preact component. Its `render()` method is relatively simple:
 
 ```javascript
 render() {
@@ -49,7 +49,7 @@ render() {
 }
 ```
 
-When no character is selected, it renders `CharacterList`. When one is selected, it renders `CharacterPage`. The object `swapi` is an instance of `SWAPI` ([swapi.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/swapi.js)) stored in `Application`'s state. It's a wrapper around the data source object. Whenever the data source emits a `change` event, `swapi` is recreated:
+When no character is selected, it renders `CharacterList`. When one is selected, it renders `CharacterPage`. The object `swapi` is an instance of `SWAPI` ([swapi.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/swapi.js)) stored in `FrontEnd`'s state. It's a wrapper around the data source object. Whenever the data source emits a `change` event, `swapi` is recreated:
 
 ```javascript
 handleDataSourceChange = (evt) => {
@@ -59,7 +59,7 @@ handleDataSourceChange = (evt) => {
 
 The call to `setState()` causes the component to rerender. Because `swapi` is a new object, it would trip the change detection mechanism in `shouldComponentUpdate()` of [pure components](https://reactjs.org/docs/react-api.html#reactpurecomponent). Relaks components are pure components by default. Whenever a `change` event occurs, the `renderAsync()` method of `CharacterList` or `CharacterPage` will run.
 
-The event handler is installed in `Application`'s `componentDidMount()` method:
+The event handler is installed in `FrontEnd`'s `componentDidMount()` method:
 
 ```javascript
 componentDidMount() {
@@ -201,4 +201,4 @@ render() {
 
 ## Next step
 
-The application in this example is fairly crude. In the [follow up example](https://github.com/trambarhq/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
+The front-end in this example is fairly crude. In the [follow up example](https://github.com/trambarhq/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
