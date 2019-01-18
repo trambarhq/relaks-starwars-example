@@ -25,16 +25,13 @@ Okay, let's dive into the code! In [main.js](https://github.com/trambarhq/relaks
 ```javascript
 function initialize(evt) {
     let dataSource = new DjangoDataSource;
-    let appContainer = document.getElementById('app-container');
-    if (!appContainer) {
-        throw new Error('Unable to find app element in DOM');
-    }
-    let appElement = h(FrontEnd, { dataSource });
-    render(appElement, appContainer);
+    let container = document.getElementById('react-container');
+    let element = h(FrontEnd, { dataSource });
+    render(element, container);
 }
 ```
 
-`FrontEnd` ([front-end.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/front-end.jsx)) is the root node of our app. It's a regular Preact component. Its `render()` method is relatively simple:
+`FrontEnd` ([front-end.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/front-end.jsx)) is the root node of the client. It's a regular Preact component. Its `render()` method is relatively simple:
 
 ```javascript
 render() {
@@ -160,7 +157,7 @@ In succession we retrieve the `films` in which the character appeared, his `spec
 Data requests are ordered pragmatically. We know that the film list is likely the first piece of information a visitor seeks. We also know that the list is more likely to be fully cached. That's why it's fetched first. Conversely, we know
 the list of starships is at the bottom of the page, where it might not be visible initially. We can therefore fetch it last.
 
-You will likely make similar decisions with your own app. Mouse-overs and pop-ups are frequently used to show supplemental details. These should always be fetched after the primary information. Since it takes a second or two for the user to position the mouse cursor (or his finger) over the button, there's ample time for the data to arrive.
+You will likely make similar decisions with your own code. Mouse-overs and pop-ups are frequently used to show supplemental details. These should always be fetched after the primary information. Since it takes a second or two for the user to position the mouse cursor (or his finger) over the button, there's ample time for the data to arrive.
 
 The minimum percentage given to `fetchMultiple()` is another trick used to improve perceived responsiveness. It tells `DjangoDataSource` that we wish to receive a partial result-set immediately if 60% of the items requested can be found in the cache. That allows us to show a list that's largely complete instead of a blank. When the full result-set finally arrives, `DjangoDataSource` will emit a `change` event. Subsequent rerendering then fills in the gaps.
 
