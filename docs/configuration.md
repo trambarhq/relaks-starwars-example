@@ -30,6 +30,11 @@ The following are the libraries used and the reason behind their inclusion:
 
 This is the configuration file of [WebPack](https://webpack.js.org/). It describes how our example app is put together.
 
+Set mode to `production` when building for production environment. This automatically enable optimization of JS code. It also sets `process.env.NODE_ENV` to the static string `"production"`, which would lead to the removal of code meant for development purpose only.
+```
+    mode: (event === 'build') ? 'production' : 'development',
+```
+
 This line set the base folder to `./src`, using `Path.resolve()` to obtain an absolute path:
 ```javascript
     context: Path.resolve('./src'),
@@ -48,11 +53,11 @@ Set the output folder to `./www` and the name of our app to `app.js`:
     },
 ```
 
-Look for source files in `./src`, then `./node_modules` (third party libraries):
+Look for source files in `./src`, then `node_modules` (third party libraries):
 ```javascript
     resolve: {
         extensions: [ '.js', '.jsx' ],
-        modules: [ Path.resolve('./src'), Path.resolve('./node_modules') ]
+        modules: [ Path.resolve('./src'), 'node_modules' ]
     },
 ```
 
@@ -92,14 +97,6 @@ SASS stylesheets to CSS and load the results through WebPack:
             },
 ```
 
-Generate source-maps so we can debug our code:
-```javascript
-    plugins: [
-        new SourceMapDevToolPlugin({
-            filename: '[file].map',
-        }),
-```
-
 Stick a script tag that loads our app (`app.js`) into `index.html` (yeah, that's it):
 ```javascript
         new HtmlWebpackPlugin({
@@ -116,9 +113,9 @@ Generate a cool-looking map detailing the size of each JavaScript library, mainl
         }),  
 ```
 
-Don't generate source-maps when we're building for production environment:
+Generate separate source-maps when we're building for production environment while using inline source-maps during development:
 ```javascript
-    devtool: (event === 'build') ? false : 'inline-source-map',
+    devtool: (event === 'build') ? 'source-map' : 'inline-source-map',
 ```    
 
 Tell WebPack Dev Server to run in inline mode instead of utilizing an iframe:
@@ -126,26 +123,4 @@ Tell WebPack Dev Server to run in inline mode instead of utilizing an iframe:
     devServer: {
         inline: true,
     }
-```
-
-When building for production environment, use the Define Plugin to replace all instances of `process.env.NODE_ENV` with `"production"`, so that expressions like `process.env.NODE_ENV !== 'production'` are false at compile time:
-
-```javascript
-    var plugins = module.exports.plugins;
-    var constants = {
-        'process.env.NODE_ENV': '"production"',
-    };
-    plugins.unshift(new DefinePlugin(constants));
-```
-
-Use UglifyJS to remove code that's would never run due to the always-false expressions created by the set-up above:
-
-```javascript
-    plugins.unshift(new UglifyJSPlugin({
-        uglifyOptions: {
-            compress: {
-                drop_console: true,
-            }
-        }
-    }));
 ```
