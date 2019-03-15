@@ -1,75 +1,39 @@
-import { h, Component } from 'preact';
+import React, { useState, useEffect, useMemo } from 'react';
 import SWAPI from 'swapi';
 import CharacterList from 'character-list';
 import CharacterPage from 'character-page';
 
 import 'style.scss';
 
-/** @jsx h */
+/**
+ * Render the front-end
+ *
+ * @return {ReactElement}
+ */
+function FrontEnd(props) {
+    const { dataSource } = props;
+    const [ swapiChange, setSWAPIChange ] = useState();
+    const [ person, setPerson ] = useState(null);
+    const swapi = useMemo(() => {
+        return new SWAPI(dataSource);
+    }, [ dataSource, swapiChange ]);
 
-class FrontEnd extends Component {
-    static displayName = 'FrontEnd';
-
-    constructor(props) {
-        super(props);
-        let { dataSource } = this.props;
-        this.state = {
-            person: null,
-            swapi: new SWAPI(dataSource),
+    useEffect(() => {
+        dataSource.onChange = setSWAPIChange;
+        return () => {
+            dataSource.onChange = null;
         };
-    }
+    });
 
-    /**
-     * Render the application
-     *
-     * @return {VNode}
-     */
-    render() {
-        let { swapi, person } = this.state;
-        if (!person) {
-            let props = { swapi, onSelect: this.handlePersonSelect };
-            return <CharacterList {...props} />;
-        } else {
-            let props = { swapi, person, onReturn: this.handlePersonUnselect };
-            return <CharacterPage {...props} />;
-        }
-    }
+    const handlePersonSelect = (evt) => { setPerson(evt.person) };
+    const handlePersonUnselect = (evt) => { setPerson(null) };
 
-    componentDidMount() {
-        let { dataSource } = this.props;
-        dataSource.onChange = this.handleDataSourceChange;
-    }
-
-    componentWillUnmount() {
-        let { dataSource } = this.props;
-        dataSource.onChange = null;
-    }
-
-    /**
-     * Called when user selects a person
-     *
-     * @param  {Event} evt
-     */
-    handlePersonSelect = (evt) => {
-        this.setState({ person: evt.person });
-    }
-
-    /**
-     * Called when user clicks "Return to list" link
-     *
-     * @param  {Event} evt
-     */
-    handlePersonUnselect = (evt) => {
-        this.setState({ person: null });
-    }
-
-    /**
-     * Called when the data source changes
-     *
-     * @param  {Object} evt
-     */
-    handleDataSourceChange = (evt) => {
-        this.setState({ swapi: new SWAPI(evt.target) });
+    if (!person) {
+        const pprops = { swapi, onSelect: handlePersonSelect };
+        return <CharacterList {...pprops} />;
+    } else {
+        const pprops = { swapi, person, onReturn: handlePersonUnselect };
+        return <CharacterPage {...pprops} />;
     }
 }
 
