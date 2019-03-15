@@ -57,6 +57,7 @@ module.exports = {
             reportFilename: `report.html`,
         }),
     ],
+    devtool: (event === 'build') ? 'source-map' : 'inline-source-map',
     devServer: {
         inline: true,
     }
