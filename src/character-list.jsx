@@ -1,37 +1,14 @@
 import React from 'react';
 import Relaks, { useProgress } from 'relaks/hooks';
 
-/**
- * Retrieve remote data and render the synchronize half of this component
- *
- * @param  {Object}  aprops
- *
- * @return {ReactElement}
- */
 async function CharacterList(aprops) {
     const { swapi, onSelect } = aprops;
     const [ show ] = useProgress(); 
-    const sprops = { onSelect };
-    show(<CharacterListSync {...sprops} />);
-    sprops.people = await swapi.fetchList('/people/');
-    sprops.people.more();
-    return <CharacterListSync {...sprops} />;
-}
-
-/**
- * Render the component, making best effort using what props are given
- *
- * @return {ReactElement}
- */
-function CharacterListSync(sprops) {
-    const { people, onSelect } = sprops;
 
     const handleClick = (evt) => {
         if (evt.button === 0) {
             const url = evt.currentTarget.href;
-            const person = people.find((person) => {
-                return (person.url === url);
-            });
+            const person = people.find(person => person.url === url);
             if (person && onSelect) {
                 onSelect({ person });
             }
@@ -39,33 +16,36 @@ function CharacterListSync(sprops) {
         }
     };
 
-    if (!people) {
-        return <h2>Loading...</h2>;
+    render();
+    const people = await swapi.fetchList('/people/');
+    render();
+
+    people.more();
+
+    function render() {
+        if (!people) {
+            show(<h2>Loading...</h2>);
+        } else {
+            show (
+                <ul className="character-list">
+                    {people.map(renderPerson)}
+                </ul>
+            );
+        }
     }
-    return (
-        <ul className="character-list">
-            {people.map(renderPerson)}
-        </ul>
-    );
 
     function renderPerson(person, i) {
-        const linkProps = {
-            href: person.url,
-            onClick: handleClick,
-        };
         return (
             <li key={i}>
-                <a {...linkProps}>{person.name}</a>
+                <a href={person.url} onClick={handleClick}>{person.name}</a>
             </li>
         );        
     }
 }
 
-const asyncComponent = Relaks(CharacterList);
-const syncComponent = CharacterListSync;
+const component = Relaks(CharacterList);
 
 export {
-    asyncComponent as default,
-    asyncComponent as CharacterList,
-    syncComponent as CharacterListSync,
+    component as default,
+    component as CharacterList,
 };

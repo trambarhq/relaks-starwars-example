@@ -5,11 +5,6 @@ import CharacterPage from 'character-page';
 
 import 'style.scss';
 
-/**
- * Render the front-end
- *
- * @return {ReactElement}
- */
 function FrontEnd(props) {
     const { dataSource } = props;
     const [ swapiChange, setSWAPIChange ] = useState();
@@ -20,20 +15,23 @@ function FrontEnd(props) {
 
     useEffect(() => {
         dataSource.onChange = setSWAPIChange;
+
         return () => {
             dataSource.onChange = null;
         };
     });
 
-    const handlePersonSelect = (evt) => { setPerson(evt.person) };
-    const handlePersonUnselect = (evt) => { setPerson(null) };
+    const handlePersonSelect = (evt) => { 
+        setPerson(evt.person); 
+    };
+    const handlePersonUnselect = (evt) => { 
+        setPerson(null); 
+    };
 
     if (!person) {
-        const pprops = { swapi, onSelect: handlePersonSelect };
-        return <CharacterList {...pprops} />;
+        return <CharacterList swapi={swapi} onSelect={handlePersonSelect} />;
     } else {
-        const pprops = { swapi, person, onReturn: handlePersonUnselect };
-        return <CharacterPage {...pprops} />;
+        return <CharacterPage swapi={swapi} person={person} onReturn={handlePersonUnselect} />;
     }
 }
 
