@@ -1,5 +1,5 @@
 import React from 'react';
-import Relaks, { useProgress } from 'relaks/hooks';
+import Relaks, { useProgress } from 'relaks';
 
 async function CharacterList(aprops) {
     const { swapi, onSelect } = aprops;
@@ -43,7 +43,7 @@ async function CharacterList(aprops) {
     }
 }
 
-const component = Relaks(CharacterList);
+const component = Relaks.memo(CharacterList);
 
 export {
     component as default,
