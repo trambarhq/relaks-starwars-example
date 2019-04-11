@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useEventTime } from 'relaks';
 import { SWAPI } from 'swapi';
 import CharacterList from 'character-list';
@@ -8,26 +8,25 @@ import 'style.scss';
 
 function FrontEnd(props) {
     const { dataSource } = props;
-    const [ swapiChange, setSWAPIChange ] = useEventTime();
+    const [ dataSourceChanged, setDataSourceChanged ] = useEventTime();
     const [ person, setPerson ] = useState(null);
     const swapi = useMemo(() => {
         return new SWAPI(dataSource);
-    }, [ dataSource, swapiChange ]);
+    }, [ dataSource, dataSourceChanged ]);
+
+    const handlePersonSelect = useCallback((evt) => {
+        setPerson(evt.person);
+    });
+    const handlePersonUnselect = useCallback((evt) => {
+        setPerson(null);
+    });
 
     useEffect(() => {
-        dataSource.onChange = setSWAPIChange;
-
+        dataSource.onChange = setDataSourceChanged;
         return () => {
             dataSource.onChange = null;
         };
     });
-
-    const handlePersonSelect = (evt) => { 
-        setPerson(evt.person); 
-    };
-    const handlePersonUnselect = (evt) => { 
-        setPerson(null); 
-    };
 
     if (!person) {
         return <CharacterList swapi={swapi} onSelect={handlePersonSelect} />;
@@ -37,6 +36,5 @@ function FrontEnd(props) {
 }
 
 export {
-    FrontEnd as default,
     FrontEnd
 };

@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Relaks, { useProgress } from 'relaks';
 
-async function CharacterList(aprops) {
-    const { swapi, onSelect } = aprops;
-    const [ show ] = useProgress(); 
+async function CharacterList(props) {
+    const { swapi, onSelect } = props;
+    const [ show ] = useProgress();
 
-    const handleClick = (evt) => {
+    const handleClick = useCallback((evt) => {
         if (evt.button === 0) {
             const url = evt.currentTarget.href;
             const person = people.find(person => person.url === url);
@@ -14,7 +14,7 @@ async function CharacterList(aprops) {
             }
             evt.preventDefault();
         }
-    };
+    });
 
     render();
     const people = await swapi.fetchList('/people/');
@@ -39,7 +39,7 @@ async function CharacterList(aprops) {
             <li key={i}>
                 <a href={person.url} onClick={handleClick}>{person.name}</a>
             </li>
-        );        
+        );
     }
 }
 
