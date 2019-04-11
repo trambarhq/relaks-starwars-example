@@ -5,7 +5,7 @@
   "scripts": {
     "watch": "webpack --watch",
     "build": "webpack",
-    "start": "webpack-dev-server && exit 0",
+    "dev": "webpack-dev-server && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
