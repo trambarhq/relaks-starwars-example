@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Relaks, { useProgress } from 'relaks';
 
 async function CharacterPage(props) {
     const { swapi, person, onReturn } = props;
     const [ show ] = useProgress(); 
 
-    const handleReturnClick = (evt) => {
+    const handleReturnClick = useCallback((evt) => {
         if (evt.button === 0) {
             if (onReturn) {
                 onReturn();
             }
             evt.preventDefault();
         }
-    };
+    });
 
     render();
     const films = await swapi.fetchMultiple(person.films, { minimum: '60%' });
@@ -71,26 +71,26 @@ async function CharacterPage(props) {
         } else {
             return (
                 <ul>
-                {
-                    urls.map((url, i) => {
-                        let label;
-                        if (objects && objects[i]) {
-                            label = objects[i][field];
-                        } else {
-                            label = <span className="pending">...</span>;
-                        }
-                        return <li key={i}>{label}</li>;
-                    })
-                }
+                    {urls.map(renderItem)}
                 </ul>                
             );
         }
+
+        function renderItem(url, i) {
+            let label;
+            if (objects && objects[i]) {
+                label = objects[i][field];
+            } else {
+                label = <span className="pending">...</span>;
+            }
+            return <li key={i}>{label}</li>;
+        }
     }
+
 }
 
 const component = Relaks.memo(CharacterPage);
 
 export {
-    component as default,
     component as CharacterPage,
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import SWAPI from 'swapi';
+import { useEventTime } from 'relaks';
+import { SWAPI } from 'swapi';
 import CharacterList from 'character-list';
 import CharacterPage from 'character-page';
 
@@ -7,7 +8,7 @@ import 'style.scss';
 
 function FrontEnd(props) {
     const { dataSource } = props;
-    const [ swapiChange, setSWAPIChange ] = useState();
+    const [ swapiChange, setSWAPIChange ] = useEventTime();
     const [ person, setPerson ] = useState(null);
     const swapi = useMemo(() => {
         return new SWAPI(dataSource);

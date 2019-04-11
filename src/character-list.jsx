@@ -46,6 +46,5 @@ async function CharacterList(aprops) {
 const component = Relaks.memo(CharacterList);
 
 export {
-    component as default,
     component as CharacterList,
 };
