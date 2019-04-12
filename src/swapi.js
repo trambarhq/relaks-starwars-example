@@ -56,5 +56,5 @@ function expandURL(url) {
 }
 
 export {
-    SWAPI as default,
+    SWAPI,
 };

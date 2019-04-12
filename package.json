@@ -1,6 +1,6 @@
 {
   "name": "relaks-starwars-example",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "An example of using Prelaks that retrieves data from swapi.co",
   "scripts": {
     "watch": "webpack --watch",
@@ -16,8 +16,6 @@
   "license": "MIT",
   "homepage": "https://github.com/trambarhq/relaks-starwars-example",
   "devDependencies": {
-    "acorn": "^6.1.1",
-    "ajv": "^6.10.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-plugin-syntax-async-functions": "^6.13.0",
@@ -29,16 +27,16 @@
     "css-loader": "^2.1.1",
     "html-webpack-plugin": "^3.2.0",
     "node-sass": "^4.11.0",
-    "react": "^16.8.5",
-    "react-dom": "^16.8.5",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "regenerator-runtime": "^0.13.2",
     "relaks": "^1.1.9",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "webpack": "^4.29.6",
-    "webpack-bundle-analyzer": "^3.1.0",
-    "webpack-dev-server": "^3.2.1"
-  },
-  "dependencies": {}
+    "webpack-bundle-analyzer": "^3.3.2",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.3.1"
+  }
 }

@@ -91,7 +91,7 @@ The next line invokes `useEventTime`, a utility hook provided by Relaks:
     const [ dataChanged, setDataChanged ] = useEventTime();
 ```
 
-`useEventTime` functions like [`useState`](https://reactjs.org/docs/hooks-state.html), only that its setter sets the state variable to the current time. `dataChanged` is referenced by the code immediately down below:
+`useEventTime` functions like [`useState`](https://reactjs.org/docs/hooks-state.html), only that its setter assigns the current time to the state variable. `dataChanged` is referenced by the code that immediately follows:
 
 ```javascript
     const swapi = useMemo(() => {
@@ -99,7 +99,7 @@ The next line invokes `useEventTime`, a utility hook provided by Relaks:
     }, [ dataSource, dataChanged ]);
 ```
 
-A [`useMemo`](https://reactjs.org/docs/hooks-reference.html#usememo) hook is used to maintain an instance of `SWAPI`. It's a wrapper around `DjangoDataSource`. It'll be passed down to sub-components that require remote data. `useMemo`  will recreate this object when either `dataSource` or `dataChanged` is different. When this happens, [memoized components](https://reactjs.org/docs/react-api.html#reactmemo) that receive `swapi` as a prop will be forced to rerender.
+A [`useMemo`](https://reactjs.org/docs/hooks-reference.html#usememo) hook is used to maintain an instance of `SWAPI`. It's a proxy object for `DjangoDataSource`. It'll be passed down to sub-components that require remote data. `useMemo`  will recreate this object when either `dataSource` or `dataChanged` is different. This forces [memoized components](https://reactjs.org/docs/react-api.html#reactmemo) to rerender.
 
 `useState` is then used to create the state variable `person`:
 
@@ -118,7 +118,7 @@ The setter function is invoked in callbacks given to sub-components:
     });
 ```
 
-Next, a `change` event listener is attached to `dataSource` in a [`useffect`](https://reactjs.org/docs/hooks-reference.html#useeffect) hook:
+Next, a `change` event listener is attached to `dataSource` in a [`useEffect`](https://reactjs.org/docs/hooks-reference.html#useeffect) hook:
 
 ```javascript
     useEffect(() => {
@@ -133,7 +133,7 @@ When a `change` event occurs, `setDataChanged` will be called. During the next r
 
 Note that clean-up code is only provided here for the sake of completeness. `dataSource` won't actually change.
 
-Finally, one of two sub-components is returned: `CharacterPage` when a character is selected or `CharacterList` when one is:
+Finally, one of two sub-components is returned: `CharacterPage` when a character is selected or `CharacterList` when no one is:
 
 ```javascript
     if (!person) {
