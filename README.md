@@ -23,9 +23,9 @@ import DjangoDataSource from 'django-data-source';
 window.addEventListener('load', initialize);
 
 function initialize(evt) {
-    let dataSource = new DjangoDataSource;
-    let container = document.getElementById('react-container');
-    let element = React.createElement(FrontEnd, { dataSource });
+    const dataSource = new DjangoDataSource;
+    const container = document.getElementById('react-container');
+    const element = React.createElement(FrontEnd, { dataSource });
     render(element, container);
 }
 ```
@@ -118,7 +118,7 @@ The setter function is invoked in callbacks given to sub-components:
     });
 ```
 
-Next, a `change` event listener is attached to `dataSource` in a [`useEffect`](https://reactjs.org/docs/hooks-reference.html#useeffect) hook:
+Next, we attached a `change` event listener to `dataSource` in a [`useEffect`](https://reactjs.org/docs/hooks-reference.html#useeffect) hook:
 
 ```javascript
     useEffect(() => {
@@ -131,9 +131,9 @@ Next, a `change` event listener is attached to `dataSource` in a [`useEffect`](h
 
 When a `change` event occurs, `setDataChanged` will be called. During the next rendering cycle, `dataChanged` will be a brand new `Date` object. This causes `useMemo` to create a fresh copy of `swapi`. This in turn forces memoized, data-dependent sub-components to rerender.
 
-Note that clean-up code is only provided here for the sake of completeness. `dataSource` won't actually change.
+The clean-up code is only provided here for the sake of completeness. `dataSource` won't actually change.
 
-Finally, one of two sub-components is returned: `CharacterPage` when a character is selected or `CharacterList` when no one is:
+At the end of the function, one of two sub-components is returned: `CharacterPage` when a character is selected or `CharacterList` when no one is:
 
 ```javascript
     if (!person) {
@@ -273,7 +273,7 @@ export {
 };
 ```
 
-Memoization is not strictly necessary. You can call `Relaks.use()` instead to create a non-memoized Relaks component. Doing so is not recommended, however, since it'd mean async operations are initiated much more frequently. While caching by the data source should prevent unnecessary network activities, the frequency of these calls would make debugging harder. Rerendering on prop changes only means more predictable behavior.
+Memoization is not strictly necessary. You can call `Relaks.use()` instead to create a non-memoized Relaks component. Doing so is not recommended though, since it'd mean async operations are initiated much more frequently. While caching by the data source should prevent unnecessary network activities, the frequency of these calls would make debugging harder. Rerendering only on prop changes means more predictable behavior.
 
 ## Character page
 
@@ -450,13 +450,12 @@ During the first call to `render()`, `person` is already available. We know a lo
     }
 ```
 
-As soon as the user clicks on a link, he'll see the basic information. The variable `homeworld`, `films`, `species`, `vehicles`, and `starships` are all `undefined` initially. We can render the correct number of list items but not the actual text. Placeholders are still better than an empty space so we do that. And as the necessary objects are fetched, we call `render()` to display more and more information. Until we finally we have everything.
+As soon as the user clicks on a link, he'll see the basic information. The variable `homeworld`, `films`, `species`, `vehicles`, and `starships` are all `undefined` initially. We can render the correct number of list items but not the actual text. Placeholders are still better than an empty space. And as the necessary objects are fetched, we call `render()` to display more and more information. Until we finally we have everything.
 
-Data requests are ordered pragmatically. We know that the film list is likely the first piece of information a visitor seeks. We also know that the list is more likely to be fully cached. That's why it's fetched first. Conversely, we know
-the list of starships is at the bottom of the page, where it might not be visible initially. We can therefore fetch it last.
+Data requests are ordered pragmatically. We know that the film list is likely the first piece of information a visitor seeks. We also know that the list is more likely to be fully cached. So we fetch it first. Conversely, we know the list of starships sits at the bottom of the page, where it won't be visible initially. We can therefore fetch it last.
 
 The minimum percentage given to `fetchMultiple()` is another trick used to improve perceived responsiveness. It tells `DjangoDataSource` that we wish to receive a partial result-set immediately if 60% of the items requested can be found in the cache. That allows us to show a list that's largely complete instead of a blank. When the full result-set finally arrives, `DjangoDataSource` will emit a `change` event. Subsequent rerendering then fills in the gaps.
 
 ## Next step
 
-Well, that's it! This example is fairly crude. It doesn't show all information available through swapi.co. The lack of browser history integration is extremely annoying--the back button doesn't work as one expects. In the [follow up example](https://github.com/trambarhq/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
+Well, that's it! This example is fairly crude. It doesn't show all information available through swapi.co. The back button doesn't work as one expects. In the [follow up example](https://github.com/trambarhq/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
