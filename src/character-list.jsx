@@ -1,82 +1,50 @@
-import { h, Component } from 'preact';
-import { AsyncComponent } from 'relaks/preact';
+import React, { useCallback } from 'react';
+import Relaks, { useProgress } from 'relaks';
 
-/** @jsx h */
+async function CharacterList(props) {
+    const { swapi, onSelect } = props;
+    const [ show ] = useProgress();
 
-class CharacterList extends AsyncComponent {
-    static displayName = 'CharacterList';
-
-    /**
-     * Retrieve remote data and render the synchronize half of this component
-     *
-     * @param  {Meanwhile}  meanwhile
-     *
-     * @return {VNode}
-     */
-    async renderAsync(meanwhile) {
-        let { swapi } = this.props;
-        let props = {
-            onSelect: this.props.onSelect,
-        };
-        meanwhile.show(<CharacterListSync {...props} />);
-        props.people = await swapi.fetchList('/people/');
-        props.people.more();
-        return <CharacterListSync {...props} />;
-    }
-}
-
-class CharacterListSync extends Component {
-    static displayName = 'CharacterListSync';
-
-    /**
-     * Render the component, making best effort using what props are given
-     *
-     * @return {VNode}
-     */
-    render() {
-        let { people } = this.props;
-        if (!people) {
-            return <h2>Loading...</h2>;
-        }
-        return (
-            <ul className="character-list">
-            {
-                people.map((person) => {
-                    let linkProps = {
-                        href: person.url,
-                        onClick: this.handleClick,
-                    };
-                    return (
-                        <li>
-                            <a {...linkProps}>{person.name}</a>
-                        </li>
-                    );
-                })
-            }
-            </ul>
-        );
-    }
-
-    handleClick = (evt) => {
+    const handleClick = useCallback((evt) => {
         if (evt.button === 0) {
-            let url = evt.currentTarget.href;
-            let person = this.props.people.find((person) => {
-                return (person.url === url);
-            });
-            if (person && this.props.onSelect) {
-                this.props.onSelect({
-                    type: 'select',
-                    target: this,
-                    person,
-                });
+            const url = evt.currentTarget.href;
+            const person = people.find(person => person.url === url);
+            if (person && onSelect) {
+                onSelect({ person });
             }
             evt.preventDefault();
         }
+    });
+
+    render();
+    const people = await swapi.fetchList('/people/');
+    render();
+
+    people.more();
+
+    function render() {
+        if (!people) {
+            show(<h2>Loading...</h2>);
+        } else {
+            show (
+                <ul className="character-list">
+                    {people.map(renderPerson)}
+                </ul>
+            );
+        }
+    }
+
+    function renderPerson(person, i) {
+        return (
+            <li key={i}>
+                <a href={person.url} onClick={handleClick}>{person.name}</a>
+            </li>
+        );
     }
 }
 
+const component = Relaks.memo(CharacterList);
+
 export {
-    CharacterList as default,
-    CharacterList,
-    CharacterListSync
+    component as CharacterList,
 };

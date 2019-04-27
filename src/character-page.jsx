@@ -1,57 +1,37 @@
-import { h, Component } from 'preact';
-import { AsyncComponent } from 'relaks/preact';
+import React, { useCallback } from 'react';
+import Relaks, { useProgress } from 'relaks';
 
-/** @jsx h */
+async function CharacterPage(props) {
+    const { swapi, person, onReturn } = props;
+    const [ show ] = useProgress(); 
 
-class CharacterPage extends AsyncComponent {
-    static displayName = 'CharacterPage';
+    const handleReturnClick = useCallback((evt) => {
+        if (evt.button === 0) {
+            if (onReturn) {
+                onReturn();
+            }
+            evt.preventDefault();
+        }
+    });
 
-    /**
-     * Retrieve remote data and render the synchronize half of this component
-     *
-     * @param  {Meanwhile}  meanwhile
-     *
-     * @return {VNode}
-     */
-    async renderAsync(meanwhile) {
-        let { swapi, person, onReturn } = this.props;
-        let props = {
-            person,
-            onReturn,
-        };
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.films = await swapi.fetchMultiple(person.films, { minimum: '60%' });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.species = await swapi.fetchMultiple(person.species, { minimum: '60%' });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.homeworld = await swapi.fetchOne(person.homeworld);
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.vehicles = await swapi.fetchMultiple(person.vehicles, { minimum: '60%' });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        props.starships = await swapi.fetchMultiple(person.starships, { minimum: '60%' });
-        meanwhile.show(<CharacterPageSync {...props} />);
-        return <CharacterPageSync {...props} />;
-    }
-}
+    render();
+    const films = await swapi.fetchMultiple(person.films, { minimum: '60%' });
+    render();
+    const species = await swapi.fetchMultiple(person.species, { minimum: '60%' });
+    render();
+    const homeworld = await swapi.fetchOne(person.homeworld);
+    render();
+    const vehicles = await swapi.fetchMultiple(person.vehicles, { minimum: '60%' });
+    render();
+    const starships = await swapi.fetchMultiple(person.starships, { minimum: '60%' });
+    render();
 
-class CharacterPageSync extends Component {
-    static displayName = 'CharacterPageSync';
-
-    /**
-     * Render the component, making best effort using what props are given
-     *
-     * @return {VNode}
-     */
-    render() {
-        let { person } = this.props;
-        let linkProps = {
-            className: 'return-link',
-            href: '#',
-            onClick: this.handleReturnClick,
-        };
-        return (
+    function render() {
+        show(
             <div className="character-page">
-                <a {...linkProps}>Return to list</a>
+                <a className="return-link" href="#" onClick={handleReturnClick}>
+                    Return to list
+                </a>
                 <h1>{person.name}</h1>
                 <div>Height: {person.height} cm</div>
                 <div>Mass: {person.mass} kg</div>
@@ -60,122 +40,57 @@ class CharacterPageSync extends Component {
                 <div>Eye color: {person.eye_color}</div>
                 <div>Birth year: {person.birth_year}</div>
                 <h2>Homeworld</h2>
-                {this.renderHomeworld()}
+                {renderList(person.homeworld, homeworld, 'name')}
                 <h2>Films</h2>
-                {this.renderFilms()}
+                {renderList(person.films, films, 'title')}
                 <h2>Species</h2>
-                {this.renderSpecies()}
+                {renderList(person.species, species, 'name')}
                 <h2>Vehicles</h2>
-                {this.renderVehicles()}
+                {renderList(person.vehicles, vehicles, 'name')}
                 <h2>Starships</h2>
-                {this.renderStarships()}
+                {renderList(person.starships, starships, 'name')}
             </div>
         );
     }
 
-    /**
-     * Render name of character's homeworld
-     *
-     * @return {VNode}
-     */
-    renderHomeworld() {
-        let { person, homeworld } = this.props;
-        let urls = person.homeworld ? [ person.homeworld ] : [];
-        let homeworlds = homeworld ? [ homeworld ] : [];
-        return this.renderList(urls, homeworlds, 'name');
-    }
+    function renderList(urls, objects, field) {
+        // handle single item
+        if (urls && !(urls instanceof Array)) {
+            urls = [ urls ];
+        }
+        if (objects && !(objects instanceof Array)) {
+            objects = [ objects ];
+        }
 
-    /**
-     * Render list of films in which the character appears
-     *
-     * @return {VNode}
-     */
-    renderFilms() {
-        let { person, films } = this.props;
-        return this.renderList(person.films, films, 'title');
-    }
-
-    /**
-     * Render list of species to which the character belong
-     *
-     * @return {VNode}
-     */
-    renderSpecies() {
-        let { person, species } = this.props;
-        return this.renderList(person.species, species, 'name');
-    }
-
-    /**
-     * Render list of vehicles the character has driven
-     *
-     * @return {VNode}
-     */
-    renderVehicles() {
-        let { person, vehicles } = this.props;
-        return this.renderList(person.vehicles, vehicles, 'name');
-    }
-
-    /**
-     * Render list of starships the character has flown
-     *
-     * @return {VNode}
-     */
-    renderStarships() {
-        let { person, starships } = this.props;
-        return this.renderList(person.starships, starships, 'name');
-    }
-
-    /**
-     * Render a list of objects using their URLs as keys. Render "..." if an
-     * object is not yet retrieved.
-     *
-     * @param  {Array<String>} urls
-     * @param  {Object<Object>} objects
-     * @param  {String} field
-     *
-     * @return {VNode}
-     */
-    renderList(urls, objects, field) {
         if (!urls || !urls.length) {
-            return <ul className="empty"><li>none</li></ul>;
+            return (
+                <ul className="empty">
+                    <li>none</li>
+                </ul>
+            );
+        } else {
+            return (
+                <ul>
+                    {urls.map(renderItem)}
+                </ul>                
+            );
         }
-        return (
-            <ul>
-            {
-                urls.map((url, index) => {
-                    let object = (objects) ? objects[index] : null;
-                    if (object) {
-                        let text = object[field];
-                        return <li>{text}</li>;
-                    } else {
-                        return <li><span className="pending">...</span></li>;
-                    }
-                })
+
+        function renderItem(url, i) {
+            let label;
+            if (objects && objects[i]) {
+                label = objects[i][field];
+            } else {
+                label = <span className="pending">...</span>;
             }
-            </ul>
-        );
+            return <li key={i}>{label}</li>;
+        }
     }
 
-    /**
-     * Called when user clicks the "Return to list" link
-     *
-     * @param  {Event} evt
-     */
-    handleReturnClick = (evt) => {
-        if (evt.button === 0) {
-            if (this.props.onReturn) {
-                this.props.onReturn({
-                    type: 'return',
-                    target: this,
-                });
-            }
-            evt.preventDefault();
-        }
-    }
 }
 
+const component = Relaks.memo(CharacterPage);
+
 export {
-    CharacterPage as default,
-    CharacterPage,
-    CharacterPageSync,
+    component as CharacterPage,
 };

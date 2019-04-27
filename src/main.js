@@ -1,13 +1,13 @@
-import 'preact/devtools';
-import { h, render } from 'preact';
+import { createElement } from 'react';
+import { render } from 'react-dom';
 import { FrontEnd } from 'front-end';
 import DjangoDataSource from 'django-data-source';
 
 window.addEventListener('load', initialize);
 
 function initialize(evt) {
-    let dataSource = new DjangoDataSource;
-    let container = document.getElementById('react-container');
-    let element = h(FrontEnd, { dataSource });
+    const dataSource = new DjangoDataSource;
+    const container = document.getElementById('react-container');
+    const element = createElement(FrontEnd, { dataSource });
     render(element, container);
 }
