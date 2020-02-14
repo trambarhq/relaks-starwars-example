@@ -4,20 +4,17 @@ This is the configuration file of [npm](https://docs.npmjs.com/cli/npm), a packa
 
 The following are the libraries used and the reason behind their inclusion:
 
-* **babel-core** - allows us to use advanced JavaScript features by translating them into older version of JavaScript compatible with existing browsers
+* **@babel/core** - allows us to use advanced JavaScript features by translating them into older version of JavaScript compatible with existing browsers
+* **@babel/plugin-transform-runtime** - plugin used to pull in Babel runtime
+* **@babel/preset-env** - Babel configuration preset
+* **@babel/preset-react** - Babel configuration preset for React JSX
+* **@babel/runtime** - Babel runtime, needed for async functions
 * **babel-loader** - Babel-Webpack integration
-* **babel-plugin-syntax-async-functions** - Babel plugin that permits the use of async/await syntax
-* **babel-plugin-transform-regenerator** - dependency needed by babel-preset-stage-0
-* **babel-plugin-transform-runtime** - dependency needed by babel-preset-stage-0
-* **babel-preset-env** - Babel configuration preset
-* **babel-preset-react** - Babel configuration preset for React JSX
-* **babel-preset-stage-0** - Babel configuration preset for non-yet-standardized features
 * **css-loader** - for processing CSS files through WebPack
 * **html-webpack-plugin** - used to stick a script tag into a HTML file (and that's it)
 * **node-sass** - SASS processor
 * **react** - React library code
 * **react-dom** - React DOM library code
-* **regenerator-runtime** - dependency needed by babel-preset-stage-0
 * **relaks** - Relaks library code
 * **sass-loader** - for processing SASS files through WebPack
 * **style-loader** - for loading CSS stylesheet using JavaScript
@@ -33,101 +30,97 @@ This is the configuration file of [WebPack](https://webpack.js.org/). It describ
 
 Set mode to `production` when building for production environment. This automatically enable optimization of JS code. It also sets `process.env.NODE_ENV` to the static string `"production"`, which would lead to the removal of code meant for development purpose only.
 ```
-    mode: (event === 'build') ? 'production' : 'development',
+  mode: (event === 'build') ? 'production' : 'development',
 ```
 
 This line set the base folder to `./src`, using `Path.resolve()` to obtain an absolute path:
 ```javascript
-    context: Path.resolve('./src'),
+  context: Path.resolve('./src'),
 ```
 
 Indicates that `main.js` is the entry point of our app:
 ```javascript
-    entry: './main',
+  entry: './main',
 ```
 
 Set the output folder to `./www` and the name of our app to `app.js`:
 ```javascript
-    output: {
-        path: Path.resolve('./www'),
-        filename: 'front-end.js',
-    },
+  output: {
+    path: Path.resolve('./www'),
+    filename: 'front-end.js',
+  },
 ```
 
 Look for source files in `./src`, then `node_modules` (third party libraries):
 ```javascript
-    resolve: {
-        extensions: [ '.js', '.jsx' ],
-        modules: [ Path.resolve('./src'), 'node_modules' ]
-    },
+  resolve: {
+    extensions: [ '.js', '.jsx' ],
+    modules: [ Path.resolve('./src'), 'node_modules' ]
+  },
 ```
 
 Configure Babel to process `.js` and `.jsx` files, employing necessary presets and plugins:
 ```javascript
-    module: {
-        rules: [
-            {
-                test: /\.jsx?$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/,
-                query: {
-                    presets: [
-                        [ 'env', { modules: false } ],
-                        'react',
-                        'stage-0',
-                    ],
-                    plugins: [
-                        'syntax-async-functions',
-                        'transform-regenerator',
-                        'transform-runtime',
-                    ]
-                }
-            },
+      {
+        test: /\.jsx?$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        query: {
+          presets: [
+            '@babel/env',
+            '@babel/react',
+          ],
+          plugins: [
+            '@babel/transform-runtime',
+          ]
+        }
+      },
 ```        
 
 SASS stylesheets to CSS and load the results through WebPack:
 ```javascript
-            {
-                test: /\.scss$/,
-                use: [
-                    'style-loader',
-                    'css-loader',
-                    'sass-loader',
-                ]
-            },
+      {
+        test: /\.scss$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'sass-loader',
+        ]
+      },
 ```
 
 Stick a script tag that loads our app (`front-end.js`) into `index.html` (yeah, that's it):
 ```javascript
-        new HtmlWebpackPlugin({
-            template: Path.resolve(`./src/index.html`),
-            filename: Path.resolve(`./www/index.html`),
-        }),
+    new HtmlWebpackPlugin({
+      template: Path.resolve(`./src/index.html`),
+      filename: Path.resolve(`./www/index.html`),
+    }),
 ```
 
 Generate a cool-looking map detailing the size of each JavaScript library, mainly so we know how large our app is after gzip compression:
 ```javascript    
-        new BundleAnalyzerPlugin({
-            analyzerMode: (event === 'build') ? 'static' : 'disabled',
-            reportFilename: `report.html`,
-        }),  
+    new BundleAnalyzerPlugin({
+        analyzerMode: (event === 'build') ? 'static' : 'disabled',
+        reportFilename: `report.html`,
+    }),  
 ```
 
 Generate separate source-maps when we're building for production environment while using inline source-maps during development:
 ```javascript
-    devtool: (event === 'build') ? 'source-map' : 'inline-source-map',
+  devtool: (event === 'build') ? 'source-map' : 'inline-source-map',
 ```
 
 Tell WebPack to not merge code from different modules so the map from Bundle Analyzer looks cleaner:
 ```javascript
-    optimization: {
-        concatenateModules: false,
-    },
+  optimization: {
+    concatenateModules: false,
+  },
 ```
 
-Tell WebPack Dev Server to run in inline mode instead of utilizing an iframe:
+Tell WebPack Dev Server to run in inline mode instead of utilizing an iframe and to open a browser window automatically:
 ```javascript
-    devServer: {
-        inline: true,
-    }
+  devServer: {
+    inline: true,
+    open: true,
+  }
 ```

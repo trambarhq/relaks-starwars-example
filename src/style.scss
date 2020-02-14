@@ -1,34 +1,34 @@
 .character-list {
-    A {
-        &:link, &:visited {
-            text-decoration: none;
-        }
-
-        &:hover {
-            text-decoration: underline;
-        }
+  A {
+    &:link, &:visited {
+      text-decoration: none;
     }
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .character-page {
-    .return-link {
-        float: right;
+  .return-link {
+    float: right;
 
-        &:link, &:visited {
-            text-decoration: none;
-        }
-
-        &:hover {
-            text-decoration: underline;
-        }
+    &:link, &:visited {
+      text-decoration: none;
     }
 
-    .pending {
-        opacity: 0.5;
-        cursor: wait;
+    &:hover {
+      text-decoration: underline;
     }
+  }
 
-    .empty {
-        opacity: 0.25;
-    }
+  .pending {
+    opacity: 0.5;
+    cursor: wait;
+  }
+
+  .empty {
+    opacity: 0.25;
+  }
 }
