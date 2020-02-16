@@ -51,14 +51,6 @@ Set the output folder to `./www` and the name of our app to `app.js`:
   },
 ```
 
-Look for source files in `./src`, then `node_modules` (third party libraries):
-```javascript
-  resolve: {
-    extensions: [ '.js', '.jsx' ],
-    modules: [ Path.resolve('./src'), 'node_modules' ]
-  },
-```
-
 Configure Babel to process `.js` and `.jsx` files, employing necessary presets and plugins:
 ```javascript
       {
