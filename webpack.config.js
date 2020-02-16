@@ -1,10 +1,8 @@
-var FS = require('fs');
-var Path = require('path');
-var Webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const Path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-var event = process.env.npm_lifecycle_event;
+const event = process.env.npm_lifecycle_event;
 
 module.exports = {
   mode: (event === 'build') ? 'production' : 'development',
@@ -13,10 +11,6 @@ module.exports = {
   output: {
     path: Path.resolve('./www'),
     filename: 'front-end.js',
-  },
-  resolve: {
-    extensions: [ '.js', '.jsx' ],
-    modules: [ Path.resolve('./src'), 'node_modules' ]
   },
   module: {
     rules: [

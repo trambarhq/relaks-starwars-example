@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useEventTime, useListener } from 'relaks';
-import { SWAPI } from 'swapi';
-import { CharacterList } from 'character-list';
-import { CharacterPage } from 'character-page';
+import { SWAPI } from './swapi.js';
+import { CharacterList } from './character-list.jsx';
+import { CharacterPage } from './character-page.jsx';
 
-import 'style.scss';
+import './style.scss';
 
 function FrontEnd(props) {
   const { dataSource } = props;

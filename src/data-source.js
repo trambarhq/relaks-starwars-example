@@ -1,4 +1,4 @@
-class DjangoDataSource {
+class DataSource {
   constructor() {
     this.queries = [];
   }
@@ -248,6 +248,5 @@ function getMinimum(options, total, def) {
 }
 
 export {
-  DjangoDataSource as default,
-  DjangoDataSource,
+  DataSource,
 };

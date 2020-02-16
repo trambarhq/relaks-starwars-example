@@ -17,31 +17,31 @@ Okay, let's dive into the code! In [main.js](https://github.com/trambarhq/relaks
 ```javascript
 import { createElement } from 'react';
 import { render } from 'react-dom';
-import { FrontEnd } from 'front-end';
-import DjangoDataSource from 'django-data-source';
+import { DataSource } from './data-source.js';
+import { FrontEnd } from './front-end.jsx';
 
 window.addEventListener('load', initialize);
 
 function initialize(evt) {
-  const dataSource = new DjangoDataSource;
+  const dataSource = new DataSource;
   const container = document.getElementById('react-container');
-  const element = React.createElement(FrontEnd, { dataSource });
+  const element = createElement(FrontEnd, { dataSource });
   render(element, container);
 }
 ```
 
-First it creates a `DjangoDataSource` ([django-data-source.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/django-data-source.js)) object. It then creates the React element `FrontEnd`, using the data source as a prop. Finally it renders the element into a DOM node.
+First it creates a `DataSource` ([data-source.js](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/data-source.js)) object. It then creates the React element `FrontEnd`, using the data source as a prop. Finally it renders the element into a DOM node.
 
 `FrontEnd` ([front-end.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/front-end.jsx)) is the root node of the client. It's a regular React functional component. Its source code is listed below. We'll walk through the function line by line.
 
 ```javascript
 import React, { useState, useEffect, useMemo } from 'react';
 import { useEventTime, useListener } from 'relaks';
-import { SWAPI } from 'swapi';
-import CharacterList from 'character-list';
-import CharacterPage from 'character-page';
+import { SWAPI } from './swapi.js';
+import { CharacterList } from './character-list.jsx';
+import { CharacterPage } from './character-page.jsx';
 
-import 'style.scss';
+import './style.scss';
 
 function FrontEnd(props) {
   const { dataSource } = props;
