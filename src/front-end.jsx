@@ -6,7 +6,7 @@ import { CharacterPage } from './character-page.jsx';
 
 import './style.scss';
 
-function FrontEnd(props) {
+export function FrontEnd(props) {
   const { dataSource } = props;
   const [ dataChanged, setDataChanged ] = useEventTime();
   const [ person, setPerson ] = useState(null);
@@ -34,7 +34,3 @@ function FrontEnd(props) {
     return <CharacterPage swapi={swapi} person={person} onReturn={handlePersonUnselect} />;
   }
 }
-
-export {
-  FrontEnd
-};

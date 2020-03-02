@@ -43,7 +43,7 @@ import { CharacterPage } from './character-page.jsx';
 
 import './style.scss';
 
-function FrontEnd(props) {
+export function FrontEnd(props) {
   const { dataSource } = props;
   const [ dataChanged, setDataChanged ] = useEventTime();
   const swapi = useMemo(() => {
@@ -71,10 +71,6 @@ function FrontEnd(props) {
     return <CharacterPage swapi={swapi} person={person} onReturn={handlePersonUnselect} />;
   }
 }
-
-export {
-  FrontEnd
-};
 ```
 
 The first line of `FrontEnd` simply places the component's props into local variables:
@@ -155,7 +151,7 @@ Whew! I hope that wasn't too hard to understand. Let us move onto the actual vis
 import React from 'react';
 import Relaks, { useProgress, useListener } from 'relaks';
 
-async function CharacterList(props) {
+export async function CharacterList(props) {
   const { swapi, onSelect } = props;
   const [ show ] = useProgress();
 
@@ -196,12 +192,6 @@ async function CharacterList(props) {
     );
   }
 }
-
-const component = Relaks.memo(CharacterList);
-
-export {
-  component as CharacterList,
-};
 ```
 
 Once again we start out by assigning the component's props to local variables:
@@ -265,18 +255,6 @@ By default, `swapi.fetchList()` will only fetch the first page (10 records). Whe
 
 The above arrangement assumes that the list is relatively short. We know that there're less than 200 characters in the Star Wars universe. In a scenario where the number of records can be in the thousands, it would be more sensible to trigger the fetching operation in a scroll handler.
 
-At the bottom of the file we call `Relaks.memo()` into convert our async function to a regular React functional component and memoize it at the same time (using [`React.memo`](https://reactjs.org/docs/react-api.html)):
-
-```javascript
-const component = Relaks.memo(CharacterList);
-
-export {
-  component as CharacterList,
-};
-```
-
-Memoization is not strictly necessary. You can call `Relaks.use()` instead to create a non-memoized Relaks component. Doing so is not recommended though, since it'd mean async operations are initiated much more frequently. While caching by the data source should prevent unnecessary network activities, the frequency of these calls would make debugging harder. Rerendering only on prop changes means more predictable behavior.
-
 ## Character page
 
 **CharacterPage** ([character-page.jsx](https://github.com/trambarhq/relaks-starwars-example/blob/master/src/character-page.jsx)) is another Relaks component. It's somewhat more complicated due to the need to load related data.
@@ -285,7 +263,7 @@ Memoization is not strictly necessary. You can call `Relaks.use()` instead to cr
 import React from 'react';
 import Relaks, { useProgress, useListener } from 'relaks';
 
-async function CharacterPage(props) {
+export async function CharacterPage(props) {
   const { swapi, person, onReturn } = props;
   const [ show ] = useProgress();
 
@@ -370,14 +348,7 @@ async function CharacterPage(props) {
       return <li key={i}>{label}</li>;
     }
   }
-
 }
-
-const component = Relaks.memo(CharacterPage);
-
-export {
-  component as CharacterPage,
-};
 ```
 
 Once again, we start by placing the component's props into local variables:

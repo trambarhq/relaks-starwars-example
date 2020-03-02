@@ -1,7 +1,7 @@
 import React from 'react';
 import Relaks, { useProgress, useListener } from 'relaks';
 
-async function CharacterList(props) {
+export async function CharacterList(props) {
   const { swapi, onSelect } = props;
   const [ show ] = useProgress();
 
@@ -42,9 +42,3 @@ async function CharacterList(props) {
     );
   }
 }
-
-const component = Relaks.memo(CharacterList);
-
-export {
-  component as CharacterList,
-};

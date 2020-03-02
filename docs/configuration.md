@@ -64,6 +64,7 @@ Configure Babel to process `.js` and `.jsx` files, employing necessary presets a
           ],
           plugins: [
             '@babel/transform-runtime',
+            'relaks/transform-memo',
           ]
         }
       },

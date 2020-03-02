@@ -1,7 +1,7 @@
 import React from 'react';
-import Relaks, { useProgress, useListener } from 'relaks';
+import { useProgress, useListener } from 'relaks';
 
-async function CharacterPage(props) {
+export async function CharacterPage(props) {
   const { swapi, person, onReturn } = props;
   const [ show ] = useProgress();
 
@@ -86,11 +86,4 @@ async function CharacterPage(props) {
       return <li key={i}>{label}</li>;
     }
   }
-
 }
-
-const component = Relaks.memo(CharacterPage);
-
-export {
-  component as CharacterPage,
-};
