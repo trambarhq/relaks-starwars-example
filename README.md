@@ -1,6 +1,6 @@
 Relaks Star Wars Example
 ------------------------
-This is an example demonstrating how to build a data-driven web page using [Relaks](https://github.com/trambarhq/relaks). It uses data from [swapi.co](https://swapi.co/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). Initially, it shows a list of Star Wars characters. When you click on a name, it displays additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
+This is an example demonstrating how to build a data-driven web page using [Relaks](https://github.com/trambarhq/relaks). It uses data from [swapi.dev](https://swapi.dev/), a public Star Wars knowledge base powered by [Django](https://www.djangoproject.com/). Initially, it shows a list of Star Wars characters. When you click on a name, it displays additional information about him/her/it. You can see it in action [here](https://trambar.io/examples/starwars-iv/).
 
 ![Screenshot](docs/img/screenshot.png)
 
@@ -392,7 +392,7 @@ The "meat" of the component is a bit meatier:
   render();
 ```
 
-During the first call to `render()`, `person` is already available. We know a lot about the Star Wars character in question (see [example](https://swapi.co/api/people/1/)): name, height, weight, and so forth. We also know in *how many* films he appeared in, *how many* vehicles he had driven and *how many* starships he had piloted. We don't know the names of these things but we know how many there are. We have enough information to create the full structure of the page. So we do that in `render()`:
+During the first call to `render()`, `person` is already available. We know a lot about the Star Wars character in question (see [example](https://swapi.dev/api/people/1/)): name, height, weight, and so forth. We also know in *how many* films he appeared in, *how many* vehicles he had driven and *how many* starships he had piloted. We don't know the names of these things but we know how many there are. We have enough information to create the full structure of the page. So we do that in `render()`:
 
 ```javascript
   function render() {
@@ -431,4 +431,4 @@ The minimum percentage given to `fetchMultiple()` is another trick used to impro
 
 ## Next step
 
-Well, that's it! This example is fairly crude. It doesn't show all information available through swapi.co. The back button doesn't work as one expects. In the [follow up example](https://github.com/trambarhq/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.
+Well, that's it! This example is fairly crude. It doesn't show all information available through swapi.dev. The back button doesn't work as one expects. In the [follow up example](https://github.com/trambarhq/relaks-starwars-example-sequel), we'll develop it into something that better resembles a production web-site.

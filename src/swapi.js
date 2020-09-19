@@ -1,4 +1,4 @@
-const baseURL = 'https://swapi.co/api';
+const baseURL = 'https://swapi.dev/api';
 
 class SWAPI {
   /**
