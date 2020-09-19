@@ -74,6 +74,11 @@ class DataSource {
             previousResults = results;
             currentPromise = (nextURL) ? null : promise;
 
+            // force HTTPS if URL uses it
+            if (nextURL && /^https:/.test(url)) {
+              nextURL = nextURL.replace(/^http:/, 'https:');
+            }
+
             // inform parent component that more data is available
             if (currentPage++ > 1) {
               this.triggerChangeEvent();
@@ -105,17 +110,17 @@ class DataSource {
    */
   fetchMultiple(urls, options) {
     // see which ones are cached already
-    var _this = this;
-    var cached = 0;
-    var fetchOptions = {};
-    for (var name in options) {
+    let _this = this;
+    let cached = 0;
+    let fetchOptions = {};
+    for (let name in options) {
       if (name !== 'minimum') {
         fetchOptions[name] = options[name];
       }
     }
-    var promises = urls.map(function(url) {
-      var props = { url: url, type: 'object' };
-      var query = _this.findQuery(props);
+    let promises = urls.map(function(url) {
+      let props = { url: url, type: 'object' };
+      let query = _this.findQuery(props);
       if (query && query.object) {
         cached++;
         return query.object;
@@ -125,7 +130,7 @@ class DataSource {
     });
 
     // wait for the complete list to arrive
-    var completeListPromise;
+    let completeListPromise;
     if (cached < urls.length) {
       completeListPromise = Promise.all(promises);
     }
